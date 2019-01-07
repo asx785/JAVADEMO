@@ -60,10 +60,7 @@ public class demo {
                 try {
                     demo window = new demo();
                     //***********************//
-
                     LoginForm loginForm = new LoginForm(window.frame);//登录界面的构造函数
-
-
 
                     //***********************//
 
@@ -157,6 +154,17 @@ public class demo {
         lblNewLabel_3.setFont(new Font("华文仿宋", Font.BOLD, 21));
         lblNewLabel_3.setBounds(234, 11, 44, 28);
         panel_subscribe.add(lblNewLabel_3);
+        //lktodo:订阅 excl导入按钮添加
+        JButton exclButton_subscription=new JButton();
+        exclButton_subscription.setFont(new Font("华文仿宋", Font.BOLD, 15));
+        exclButton_subscription.setBounds(570, 11, 110, 28);
+        exclButton_subscription.setText("导入Excl");
+        panel_subscribe.add(exclButton_subscription);
+        exclButton_subscription.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent arg0) {
+                System.out.println(exclButton_subscription.getText());
+            }
+        });
 
         String[] name = {"TagName", "TagValue", "Time", "Quality", "Id"};
 

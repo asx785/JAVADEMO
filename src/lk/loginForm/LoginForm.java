@@ -1,6 +1,7 @@
 package lk.loginForm;
 
 import demoFunction.classDemoClient;
+import lk.loginForm.method.BCryptFunction;
 
 import javax.swing.*;
 import java.awt.*;
@@ -81,8 +82,10 @@ public class LoginForm {
                     windowsform.setVisible(true);//显示main界面
                 }else{
                     messageForm.messageShow("UserName or Password may be wrong !");
+                    // lktodo:测试免登陆
+                    loginframe.dispose();//回收登录界面
+                    windowsform.setVisible(true);//显示main界面
                 }
-
             }
         });
     }

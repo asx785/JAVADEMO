@@ -1,4 +1,4 @@
-package lk.loginForm;
+package lk.loginForm.method;
 
 import org.mindrot.bcrypt.BCrypt;
 
