@@ -12,7 +12,7 @@
       <maximumSize width="350" height="100"/>
       <minimumSize width="350" height="100"/>
       <preferredSize width="350" height="100"/>
-      <toolTipText value="提示"/>
+      <toolTipText value=""/>
     </properties>
     <border type="none"/>
     <children>

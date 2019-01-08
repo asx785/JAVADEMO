@@ -5,6 +5,9 @@ import com.ioserver.bean.Struct_TagInfo_AddName;
 import com.sun.jna.WString;
 import demoFunction.classDemoClient;
 import lk.loginForm.LoginForm;
+import lk.loginForm.method.ExclImport;
+import org.jb2011.lnf.beautyeye.BeautyEyeLNFHelper;
+import org.jb2011.lnf.beautyeye.ch3_button.BEButtonUI;
 
 
 import javax.swing.*;
@@ -54,7 +57,18 @@ public class demo {
      * Launch the application.
      */
     public static void main(String[] args) {
+        try
+        {
 
+            UIManager.put("RootPane.setupButtonVisible", false);//隐藏设置
+            BeautyEyeLNFHelper.frameBorderStyle = BeautyEyeLNFHelper.FrameBorderStyle.generalNoTranslucencyShadow;
+            org.jb2011.lnf.beautyeye.BeautyEyeLNFHelper.launchBeautyEyeLNF();
+
+        }
+        catch(Exception e)
+        {
+            //TODO exception
+        }
         EventQueue.invokeLater(new Runnable() {
             public void run() {
                 try {
@@ -91,8 +105,8 @@ public class demo {
 
         frame = new JFrame();
         frame.setResizable(false);
-        frame.getContentPane().setBackground(new Color(137, 140, 135));
-        frame.setBounds(100, 100, 873, 609);
+        frame.getContentPane().setBackground(new Color(237, 240, 232));
+        frame.setBounds(520, 200, 873, 609);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         JLabel lblNewLabel = new JLabel("IP\uFF1A");
@@ -156,13 +170,14 @@ public class demo {
         panel_subscribe.add(lblNewLabel_3);
         //lktodo:订阅 excl导入按钮添加
         JButton exclButton_subscription=new JButton();
+        exclButton_subscription.setUI(new BEButtonUI().setNormalColor(BEButtonUI.NormalColor.lightBlue));
         exclButton_subscription.setFont(new Font("华文仿宋", Font.BOLD, 15));
         exclButton_subscription.setBounds(570, 11, 110, 28);
         exclButton_subscription.setText("导入Excl");
         panel_subscribe.add(exclButton_subscription);
         exclButton_subscription.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent arg0) {
-                System.out.println(exclButton_subscription.getText());
+                ExclImport.exclimport();
             }
         });
 

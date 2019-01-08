@@ -2,6 +2,7 @@ package lk.loginForm;
 
 import demoFunction.classDemoClient;
 import lk.loginForm.method.BCryptFunction;
+import lk.loginForm.method.ReadProperties;
 
 import javax.swing.*;
 import java.awt.*;
@@ -51,15 +52,8 @@ public class LoginForm {
 
 
         /**/
-        //读取配置
-        InputStream in = classDemoClient.class.getClassLoader().getResourceAsStream("resources/properties.properties");
-        BufferedReader br = new BufferedReader(new InputStreamReader(in));
-        Properties prop = new Properties();
-        try {
-            prop.load(br);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        Properties prop= ReadProperties.getProp();
+
         Loginbutton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent arg0) {
                 String username=usernametextField.getText();
@@ -81,8 +75,8 @@ public class LoginForm {
                     loginframe.dispose();//回收登录界面
                     windowsform.setVisible(true);//显示main界面
                 }else{
-                    messageForm.messageShow("UserName or Password may be wrong !");
                     // lktodo:测试免登陆
+                    //messageForm.messageShow("UserName or Password may be wrong !");
                     loginframe.dispose();//回收登录界面
                     windowsform.setVisible(true);//显示main界面
                 }
