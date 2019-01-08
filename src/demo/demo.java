@@ -9,22 +9,19 @@ import lk.loginForm.method.ExclImport;
 import org.jb2011.lnf.beautyeye.BeautyEyeLNFHelper;
 import org.jb2011.lnf.beautyeye.ch3_button.BEButtonUI;
 
-
 import javax.swing.*;
 import javax.swing.border.LineBorder;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.sql.Date;
 import java.text.DateFormat;
-import java.util.Properties;
+import java.util.*;
+import java.util.List;
 import java.util.Timer;
-import java.util.TimerTask;
-import java.util.Vector;
 
 
 public class demo {
@@ -41,32 +38,37 @@ public class demo {
     int chooseSyncRdBtn = 0;// 1,short 2,float 3,string
     int chosseAsyncRdBtn = 0;
     int flagConnect = 0;// 1为连接
+    /*/flag 判断是同步读、显示全部、追加*/
+    int flagSyncRead=0;//1是同步读 2是显示全部 3是追加
 
     Vector<WString> vecAllTagName = new Vector<WString>();
+    Map<WString, Vector<WString>> MapvecSubscribeTagsName = new HashMap<>();//带设备名的TagName
+    List asynclist;
+    List synclist;
+    List subscrilist;
+
+
     private JTable table_subscribe;
     private JTable table;
-    private JTextField text_asyncReadTagName;
     private JTable table_1;
     private JTextField text_syncReadTagName;
     private JTextField text_syncWriteTagName;
     private JTextField text_syncWriteTagValue;
     private JTextField text_asyncWriteTagName;
     private JTextField text_asyncWriteTagValue;
+    private JTextField text_asyncReadTagName;
 
     /**
      * Launch the application.
      */
     public static void main(String[] args) {
-        try
-        {
+        try {
 
             UIManager.put("RootPane.setupButtonVisible", false);//隐藏设置
             BeautyEyeLNFHelper.frameBorderStyle = BeautyEyeLNFHelper.FrameBorderStyle.generalNoTranslucencyShadow;
             org.jb2011.lnf.beautyeye.BeautyEyeLNFHelper.launchBeautyEyeLNF();
 
-        }
-        catch(Exception e)
-        {
+        } catch (Exception e) {
             //TODO exception
         }
         EventQueue.invokeLater(new Runnable() {
@@ -77,7 +79,6 @@ public class demo {
                     LoginForm loginForm = new LoginForm(window.frame);//登录界面的构造函数
 
                     //***********************//
-
 
 
                 } catch (Exception e) {
@@ -169,7 +170,7 @@ public class demo {
         lblNewLabel_3.setBounds(234, 11, 44, 28);
         panel_subscribe.add(lblNewLabel_3);
         //lktodo:订阅 excl导入按钮添加
-        JButton exclButton_subscription=new JButton();
+        JButton exclButton_subscription = new JButton();
         exclButton_subscription.setUI(new BEButtonUI().setNormalColor(BEButtonUI.NormalColor.lightBlue));
         exclButton_subscription.setFont(new Font("华文仿宋", Font.BOLD, 15));
         exclButton_subscription.setBounds(570, 11, 110, 28);
@@ -181,7 +182,7 @@ public class demo {
             }
         });
 
-        String[] name = {"TagName", "TagValue", "Time", "Quality", "Id"};
+        String[] subscribHeadename = {"DeviceName", "TagName", "TagValue", "Time", "Quality", "Id"};
 
         JScrollPane scrollPane = new JScrollPane();
         scrollPane.setBounds(12, 50, 509, 260);
@@ -190,8 +191,8 @@ public class demo {
         DefaultTableModel model_subscribe = new DefaultTableModel();
 
         table_subscribe = new JTable(model_subscribe);
-        model_subscribe.setColumnIdentifiers(name);
-        model_subscribe.addRow(name);
+        model_subscribe.setColumnIdentifiers(subscribHeadename);
+        model_subscribe.addRow(subscribHeadename);
 
         scrollPane.setViewportView(table_subscribe);
         table_subscribe.setBorder(new LineBorder(Color.black));
@@ -223,13 +224,36 @@ public class demo {
         panel_AsyncReadWrite.add(text_asyncReadTagName);
         text_asyncReadTagName.setColumns(10);
 
+        String[] Headname = {"TagName", "TagValue", "Time", "Quality", "Id"};
         DefaultTableModel model_asyncReadWrite = new DefaultTableModel();
-        JTable table_asyncReadWrite = new JTable(model_asyncReadWrite);
-        model_asyncReadWrite.setColumnIdentifiers(name);
-        model_asyncReadWrite.addRow(name);
+        JTable table_asyncReadWrite = new JTable(model_asyncReadWrite){
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
+        model_asyncReadWrite.setColumnIdentifiers(Headname);
+        //model_asyncReadWrite.addRow(Headname);基础数据
 
         scrollPane_1.setViewportView(table_asyncReadWrite);
         table_asyncReadWrite.setBorder(new LineBorder(Color.black));
+        //lktodo table修改
+        table_asyncReadWrite.setCellSelectionEnabled(true);
+        table_asyncReadWrite.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);//修改一条
+        // 首先通过表格对象 table 获取选择器模型
+        ListSelectionModel selectionModel = table_asyncReadWrite.getSelectionModel();
+        selectionModel.addListSelectionListener(new ListSelectionListener() {
+            @Override
+            public void valueChanged(ListSelectionEvent e) {
+                int selectedRow = table_asyncReadWrite.getSelectedRow(); // 获取选中的第一行
+                int selectedColumn = table_asyncReadWrite.getSelectedColumn(); // 获取选中的第一列
+                int[] selectedRows = table_asyncReadWrite.getSelectedRows();// 获取选中的所有行
+                int[] selectedColumns = table_asyncReadWrite.getSelectedColumns();
+                text_asyncWriteTagName.setText(table_asyncReadWrite.getValueAt(selectedRow,0).toString());
+            }
+        });
+
+
 
         /// -------------------------------------------------------///
 
@@ -255,8 +279,8 @@ public class demo {
 
         DefaultTableModel model_syncReadWrite = new DefaultTableModel();
         JTable table_syncReadWrite = new JTable(model_syncReadWrite);
-        model_syncReadWrite.setColumnIdentifiers(name);
-        model_syncReadWrite.addRow(name);
+        model_syncReadWrite.setColumnIdentifiers(Headname);
+        //model_syncReadWrite.addRow(Headname);
 
         scrollPane_2.setViewportView(table_syncReadWrite);
         table_syncReadWrite.setBorder(new LineBorder(Color.black));
@@ -294,7 +318,7 @@ public class demo {
         panel_SyncReadWrite.add(panel_2);
 
         JRadioButton rdbtnSyncShort = new JRadioButton("int");
-        rdbtnSyncShort.setBounds(403, 375, 53, 25);
+        rdbtnSyncShort.setBounds(400, 375, 60, 25);
         panel_SyncReadWrite.add(rdbtnSyncShort);
 
 
@@ -304,8 +328,17 @@ public class demo {
             }
         });
 
+        JRadioButton rdbtnSyncFloat = new JRadioButton("float");
+        rdbtnSyncFloat.setBounds(460, 375, 80, 25);
+        panel_SyncReadWrite.add(rdbtnSyncFloat);
+        rdbtnSyncFloat.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                chooseSyncRdBtn = 2;
+            }
+        });
+
         JRadioButton rdbtnSyncString = new JRadioButton("string");
-        rdbtnSyncString.setBounds(460, 375, 76, 25);
+        rdbtnSyncString.setBounds(540, 375, 100, 25);
         panel_SyncReadWrite.add(rdbtnSyncString);
         rdbtnSyncString.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -313,14 +346,7 @@ public class demo {
             }
         });
 
-        JRadioButton rdbtnSyncFloat = new JRadioButton("float");
-        rdbtnSyncFloat.setBounds(540, 375, 64, 25);
-        panel_SyncReadWrite.add(rdbtnSyncFloat);
-        rdbtnSyncFloat.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                chooseSyncRdBtn = 2;
-            }
-        });
+
         /// --------------------------------------------------------///
         /********************** <标签初始化END> ****************************/
 
@@ -407,7 +433,7 @@ public class demo {
         text_asyncWriteTagValue.setColumns(10);
 
         JRadioButton rdbtnAsyncInt = new JRadioButton("int");
-        rdbtnAsyncInt.setBounds(408, 390, 52, 25);
+        rdbtnAsyncInt.setBounds(400, 390, 72, 25);
         panel_AsyncReadWrite.add(rdbtnAsyncInt);
         rdbtnAsyncInt.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -416,7 +442,7 @@ public class demo {
         });
 
         JRadioButton rdbtnAsyncFloat = new JRadioButton("float");
-        rdbtnAsyncFloat.setBounds(474, 390, 63, 25);
+        rdbtnAsyncFloat.setBounds(470, 390, 90, 25);
         panel_AsyncReadWrite.add(rdbtnAsyncFloat);
         rdbtnAsyncFloat.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -425,7 +451,7 @@ public class demo {
         });
 
         JRadioButton rdbtnAsyncString = new JRadioButton("string");
-        rdbtnAsyncString.setBounds(555, 390, 75, 25);
+        rdbtnAsyncString.setBounds(555, 390, 100, 25);
         panel_AsyncReadWrite.add(rdbtnAsyncString);
         rdbtnAsyncString.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -453,7 +479,8 @@ public class demo {
         btnSubscribeAllTags.setBorder(null);
         btnSubscribeAllTags.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                vecAllTagName = client.funcSubscribeAllTags();
+                //vecAllTagName = client.funcSubscribeAllTags();//所有订阅
+                MapvecSubscribeTagsName = client.funcSubscribeAllTags_Device();
                 flagSubscribeAll = 1;
             }
         });
@@ -475,6 +502,47 @@ public class demo {
         });
         btn_asyncRead.setBounds(51, 390, 103, 25);
         panel_AsyncReadWrite.add(btn_asyncRead);
+
+        //lktodo:异步excl导入按钮添加
+        JButton exclButton_async = new JButton();
+        exclButton_async.setUI(new BEButtonUI().setNormalColor(BEButtonUI.NormalColor.lightBlue));
+        exclButton_async.setFont(new Font("华文仿宋", Font.BOLD, 15));
+        exclButton_async.setBounds(570, 11, 110, 28);
+        exclButton_async.setText("导入Excl");
+        panel_AsyncReadWrite.add(exclButton_async);
+        exclButton_async.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent arg0) {
+                asynclist= ExclImport.exclimport();
+                model_asyncReadWrite.setRowCount(0);
+                String strAllTagName =asynclist.get(0).toString();//拼接字符串
+                for(int i=1;i<asynclist.size();i++){
+                   strAllTagName=strAllTagName+","+asynclist.get(i).toString();
+                }
+
+                String[] tagNames = strAllTagName.split(",");
+                client.funcAsyncRead(tagNames);
+                flagAsyncReadComplete = 1;
+            }
+        });
+
+        //lktodo:异步显示按钮添加
+        JButton Button_async_show = new JButton();
+        Button_async_show.setBounds(170, 390, 103, 25);
+        Button_async_show.setText("显示全部");
+        panel_AsyncReadWrite.add(Button_async_show);
+        Button_async_show.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent arg0) {
+                List tagNamelist= asynclist;
+                model_asyncReadWrite.setRowCount(0);//清零原来的数据
+                String strAllTagName =tagNamelist.get(0).toString();//拼接字符串
+                for(int i=1;i<tagNamelist.size();i++){
+                    strAllTagName=strAllTagName+","+tagNamelist.get(i).toString();
+                }
+                String[] tagNames = strAllTagName.split(",");
+                client.funcAsyncRead(tagNames);
+                flagAsyncReadComplete = 1;
+            }
+        });
         /************************ <异步读按钮END> ************************/
 
         /************************ 异步写按钮 ****************************/
@@ -506,10 +574,45 @@ public class demo {
             public void actionPerformed(ActionEvent arg0) {
                 model_syncReadWrite.setRowCount(0);
                 flagSyncReadComplete = 1;
+                flagSyncRead=1;
+
             }
         });
         btn_syncReadWrite.setBounds(58, 391, 103, 25);
         panel_SyncReadWrite.add(btn_syncReadWrite);
+
+
+        //lktodo:同步excl导入按钮添加
+        JButton exclButton_sync = new JButton();
+        exclButton_sync.setUI(new BEButtonUI().setNormalColor(BEButtonUI.NormalColor.lightBlue));
+        exclButton_sync.setFont(new Font("华文仿宋", Font.BOLD, 15));
+        exclButton_sync.setBounds(570, 11, 110, 28);
+        exclButton_sync.setText("导入Excl");
+        panel_SyncReadWrite.add(exclButton_sync);
+        exclButton_sync.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent arg0) {
+                model_syncReadWrite.setRowCount(0);
+                synclist= ExclImport.exclimport();//同步读数据
+                flagSyncRead=2;
+                flagSyncReadComplete = 1;
+            }
+        });
+
+        //lktodo:同步显示按钮添加
+        JButton Button_sync_show = new JButton();
+        Button_sync_show.setBounds(170, 390, 103, 25);
+        Button_sync_show.setText("显示全部");
+        panel_SyncReadWrite.add(Button_sync_show);
+        Button_sync_show.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent arg0) {
+                if(synclist==null){
+                    return;
+                }
+                model_syncReadWrite.setRowCount(0);
+                flagSyncRead=2;
+                flagSyncReadComplete = 1;
+            }
+        });
         /************************ <同步读按钮END> ************************/
 
         /************************** 同步写按钮 *****************************/
@@ -656,8 +759,27 @@ public class demo {
                 //同步读刷新
                 if ((flagSyncReadComplete == 1) && (lamp.getBackground() == Color.GREEN)) {
                     flagSyncReadComplete = 0;
-                    String strAllTagName = text_syncReadTagName.getText();
-                    String[] tagNames = strAllTagName.split(",");
+                    String[] tagNames={};
+                    String strAllTagName=null;
+                    switch (flagSyncRead){
+                        case 1:{
+                            strAllTagName=text_syncReadTagName.getText();
+                            tagNames= strAllTagName.split(",");
+                            break;
+                        }
+                        case 2:{
+                            strAllTagName =synclist.get(0).toString();//拼接字符串
+                            for(int i=1;i<synclist.size();i++){
+                                strAllTagName=strAllTagName+","+synclist.get(i).toString();
+                            }
+                            tagNames= strAllTagName.split(",");
+                            break;
+                        }
+                        case 3:{
+
+                        }
+                    }
+
                     Struct_TagInfo_AddName[] structTagValue = client.funcSyncRead(tagNames);
                     for (int i = 0; i < structTagValue.length; i++) {
                         Struct_TagInfo_AddName value = structTagValue[i];
@@ -788,15 +910,14 @@ public class demo {
                 // 订阅变量刷新
                 if ((btnSubscribeChoose.getBackground() == Color.WHITE) && (lamp.getBackground() == Color.green)) {
                     model_subscribe.setRowCount(0);//清零之前的变量值
-                    if (vecAllTagName.size() > 0) {
-                        for (int i = 0; i < vecAllTagName.size(); i++) {
+                    if (vecAllTagName.size() > 0 || false) {
+                        for (int i = 1; i < vecAllTagName.size(); i++) {
                             WString tagName = vecAllTagName.get(i);
-                            Struct_TagInfo value = client.funcGetTagValue(tagName);
-
+                            Struct_TagInfo value = client.funcGetTagValue(tagName);//订阅发送的tagname
+                            Vector row = new Vector();
+                            row.add(vecAllTagName.get(0)); //设备名字添加
                             if (value != null) {
-                                Vector row = new Vector();
                                 row.add(tagName);
-
                                 switch ((int) value.TagValue.ValueType) {
                                     case 1:
                                         row.add(value.TagValue.TagValue.bitVal);
@@ -845,6 +966,75 @@ public class demo {
                                 model_subscribe.addRow(row);
                                 table_subscribe.repaint();
                             }
+                        }
+                    }
+                }
+                //Todo:导入的数据订阅刷新
+                if ((btnSubscribeChoose.getBackground() == Color.WHITE) && (lamp.getBackground() == Color.green)) {
+                    model_subscribe.setRowCount(0);//清零之前的变量值
+
+                    if (MapvecSubscribeTagsName.size() > 0) {
+                        Iterator<Map.Entry<WString, Vector<WString>>> entries = MapvecSubscribeTagsName.entrySet().iterator();
+                        while (entries.hasNext()) {
+                            Map.Entry<WString, Vector<WString>> entry = entries.next();
+                            for (int i = 0; i < entry.getValue().size(); i++) {
+                                WString tagName = entry.getValue().get(i);
+                                Struct_TagInfo value = client.funcGetTagValue(tagName);//订阅发送的tagname
+                                //设备名字添加
+                                Vector row = new Vector();
+                                row.add(entry.getKey());
+                                if (value != null) {
+                                    row.add(tagName);
+                                    switch ((int) value.TagValue.ValueType) {
+                                        case 1:
+                                            row.add(value.TagValue.TagValue.bitVal);
+                                            break;
+                                        case 2:
+                                            row.add(value.TagValue.TagValue.i1Val);
+                                            break;
+                                        case 3:
+                                            row.add(value.TagValue.TagValue.i1Val);
+                                            break;
+                                        case 4:
+                                            row.add(value.TagValue.TagValue.i2Val);
+                                            break;
+                                        case 5:
+                                            row.add(value.TagValue.TagValue.i2Val);
+                                            break;
+                                        case 6:
+                                            row.add(value.TagValue.TagValue.i4Val);
+                                            break;
+                                        case 7:
+                                            row.add(value.TagValue.TagValue.i4Val);
+                                            break;
+                                        case 8:
+                                            row.add(value.TagValue.TagValue.i8Val);
+                                            break;
+                                        case 9:
+                                            row.add(value.TagValue.TagValue.r4Val);
+                                            break;
+                                        case 10:
+                                            row.add(value.TagValue.TagValue.r8Val);
+                                            break;
+                                        case 11:
+                                            row.add(value.TagValue.TagValue.wstrVal);
+                                            break;
+                                        default:
+                                            row.add("不支持类型");
+                                            break;
+                                    }
+
+                                    Date TimeStamp = new Date(value.TimeStamp.Seconds.longValue() * 1000);
+                                    //tolocaleString过时方法替代
+                                    DateFormat ddtf = DateFormat.getDateTimeInstance();
+                                    row.add("" + ddtf.format(TimeStamp));
+                                    row.add(value.QualityStamp);
+                                    row.add(value.TagID);
+                                    model_subscribe.addRow(row);
+                                    table_subscribe.repaint();
+                                }
+                            }
+
                         }
                     }
                 }

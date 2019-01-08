@@ -22,6 +22,7 @@ import java.awt.*;
 import java.io.*;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
@@ -266,7 +267,7 @@ public class ExclImport{
 
     }
     private static Frame jf;
-    public static void exclimport() {
+    public static List exclimport() {
         //FileDialog选择器
 //        {
 //            FileDialog fdopen = new FileDialog(jf, "Excl Choose", FileDialog.LOAD);
@@ -291,7 +292,6 @@ public class ExclImport{
 //        }
 
         JFileChooser fileChooser = new JFileChooser();
-
         fileChooser.setCurrentDirectory(new File(".")); // 设置默认显示的文件夹为当前文件夹
         fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);//设置文件选择的模式
         fileChooser.setMultiSelectionEnabled(false); // 设置是否允许多选
@@ -305,21 +305,27 @@ public class ExclImport{
             // 如果点击了"确定", 则获取选择的文件路径
             file= fileChooser.getSelectedFile();
         }else {
-            return;
+            return null;
         }
-        //File file = new File(str);
-        //File file = new File("C:\\Users\\Administrator\\Desktop\\test.xlsx");
         List<List<Object>> dataList= null;
         try {
             dataList = importExcel(file);
         } catch (IOException e) {
             e.printStackTrace();
         }
-        for (int i = 0; i < dataList.size(); i++) {
+        //遍历
+        List list=new ArrayList();
+        for (int i = 1; i < dataList.size(); i++) {
             for (int j = 0; j < dataList.get(i).size(); j++) {
-                System.out.println(dataList.get(i).get(j));
+                //System.out.println(dataList.get(i).get(j));
+                list.add(dataList.get(i).get(j));
             }
-            System.out.println("------------------");
+            //System.out.println("------------------");
         }
+
+
+//        JDialog jDialog=new JDialog();
+//        jDialog.setVisible(true);
+        return list;
     }
 }

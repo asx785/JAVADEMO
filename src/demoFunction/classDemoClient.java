@@ -16,6 +16,7 @@ public class classDemoClient {
     Vector<WString> vecSubscribeTagsName = new Vector<WString>();// 添加的订阅变量
     Vector<WString> vecAsyncReadTagsName = new Vector<WString>();// 添加的异步读变量
     Map<NativeLong, WString> mapIdAndName = new HashMap<NativeLong, WString>();
+    Map<WString,Vector<WString>> MapvecSubscribeTagsName=new HashMap<>();
 
     public Struct_TagInfo funcGetTagValue(WString TagName) {
         ClientDataBean dataBean = GlobalCilentBean.getInstance().getClientByHandle(client.getHandle());
@@ -102,7 +103,19 @@ public class classDemoClient {
         }
         Struct_TagInfo_AddName[] structTagValue = client.SyncReadTagsValueReturnNames(client.getHandle(), tagNames,
                 tagNames.length, 0);
-        return structTagValue;
+        //去无效数据
+        List<Struct_TagInfo_AddName> value=new ArrayList<>();
+        for(int i=0;i<structTagValue.length;i++){
+            if(structTagValue[i].TagID!=0){
+                value.add(structTagValue[i]);
+            }
+        }
+        Struct_TagInfo_AddName[] va=new Struct_TagInfo_AddName[value.size()];
+        for(int i=0;i<value.size();i++){
+            va[i]=value.get(i);
+        }
+
+        return va;
     }
     //同步写方法
     public int funcSyncWrite(String tagName, String tagValue, int type) {
@@ -222,8 +235,8 @@ public class classDemoClient {
 
         //deviceProperties设备属性
         for (int i_channel = 0; i_channel < channelProperties.length; i_channel++) {
-            Struct_DeviceProperty[] deviceProperties = client.BrowserDevices(client.getHandle(),
-                    channelProperties[i_channel].ChannelName);
+            Struct_DeviceProperty[] deviceProperties =
+                    client.BrowserDevices(client.getHandle(), channelProperties[i_channel].ChannelName);
 
             //tagProperties标签属性Tag
             for (int i_device = 0; i_device < deviceProperties.length; i_device++) {
@@ -250,6 +263,59 @@ public class classDemoClient {
         }
 
         return vecSubscribeTagsName;
+    }
+
+    //返回设备名加订阅的标签值
+    public Map<WString,Vector<WString>> funcSubscribeAllTags_Device() {
+        if (funcIsConnect() != 0) {
+            return null;
+        }
+        // 层次化浏览所有变量
+        vecSubscribeTagsName.clear();
+        MapvecSubscribeTagsName.clear();
+        //channelProperties是io发过来的大类渠道 里面包含设备
+        Struct_ChannelProperty[] channelProperties = client.BrowserChannels(client.getHandle(), new WString(""));
+
+        //deviceProperties设备属性
+        for (int i_channel = 0; i_channel < channelProperties.length; i_channel++) {
+            Struct_DeviceProperty[] deviceProperties =
+                    client.BrowserDevices(client.getHandle(), channelProperties[i_channel].ChannelName);
+            //lktodo:默认的一个通道下面一个设备
+            WString DeviceName= deviceProperties[0].DeviceName;//设备名称
+            //tagProperties标签属性Tag
+            for (int i_device = 0; i_device < deviceProperties.length; i_device++) {
+                Struct_TagProperty[] tagProperties = client.BrowserCollectTags(client.getHandle(),
+                        deviceProperties[i_device].DeviceName);
+
+                WString[] TagNames = new WString[tagProperties.length - 2];
+                int i_tagNames = 0;
+                for (int i_tag = 0; i_tag < tagProperties.length; i_tag++) {
+                    String wTagName = tagProperties[i_tag].TagName.toString();
+                    if (wTagName.indexOf(new String("$")) == -1) {
+                        TagNames[i_tagNames] = tagProperties[i_tag].TagName;
+                        vecSubscribeTagsName.add(tagProperties[i_tag].TagName);
+                        i_tagNames++;
+                    }
+                }
+                int[] TagIDs = new int[i_tagNames];
+                for (int i = 0; i < i_tagNames; i++) {
+                    TagIDs[i] = GlobalCilentBean.getInstance().getTagIDbyName(TagNames[i]);
+                }
+                client.SubscribeTagValuesChange(client.getHandle(), TagIDs, TagIDs.length);
+                MapvecSubscribeTagsName.put(DeviceName,vecSubscribeTagsName);//加入到Map中
+                vecSubscribeTagsName=new Vector<>();//Tag归零
+            }
+        }
+
+        return MapvecSubscribeTagsName;
+    }
+
+    //订阅
+    public void Subscribe(WString []TagNames){
+        int[] TagIDs = new int[TagNames.length];
+        for (int i = 0; i <TagNames.length; i++) {
+            TagIDs[i] = GlobalCilentBean.getInstance().getTagIDbyName(TagNames[i]);
+        }
     }
 
     public int funcIsConnect() {
