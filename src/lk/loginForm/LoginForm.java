@@ -8,6 +8,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.image.ImageObserver;
+import java.awt.image.ImageProducer;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -24,8 +26,8 @@ public class LoginForm {
     private JTextField usernametextField;
     private JTextField passwordTextField;
     private JButton Loginbutton;
-    private JLabel userNameLabel;
-    private JLabel passwordLabel;
+    private JLabel BG;
+
 
     public static boolean loginFalg=false;//登录成功验证
     private JFrame windowsform; //程序主界面
@@ -51,6 +53,11 @@ public class LoginForm {
         loginframe.setVisible(true);
 
 
+//        BG.setSize(400,300);
+//        ImageIcon imageIcon= new ImageIcon("C:\\Users\\Administrator\\Desktop\\JavaDemoCode(x64)\\src\\resources\\picture\\143882949157763955c2cbb3c2d49.jpg");
+//        BG.setSize(loginJPanel.getSize());
+//        BG.setIcon(imageIcon);
+        BG.setFont(new Font("宋体", Font.LAYOUT_NO_LIMIT_CONTEXT, 70));
         /**/
         Properties prop= ReadProperties.getProp();
 

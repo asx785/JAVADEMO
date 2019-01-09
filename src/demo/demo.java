@@ -37,12 +37,12 @@ public class demo {
     int flagSyncReadComplete = 0;
     int chooseSyncRdBtn = 0;// 1,short 2,float 3,string
     int chosseAsyncRdBtn = 0;
-    int flagConnect = 0;// 1ÎªÁ¬½Ó
-    /*/flag ÅĞ¶ÏÊÇÍ¬²½¶Á¡¢ÏÔÊ¾È«²¿¡¢×·¼Ó*/
-    int flagSyncRead=0;//1ÊÇÍ¬²½¶Á 2ÊÇÏÔÊ¾È«²¿ 3ÊÇ×·¼Ó
+    int flagConnect = 0;// 1ä¸ºè¿æ¥
+    /*/flag åˆ¤æ–­æ˜¯åŒæ­¥è¯»ã€æ˜¾ç¤ºå…¨éƒ¨ã€è¿½åŠ */
+    int flagSyncRead=0;//1æ˜¯åŒæ­¥è¯» 2æ˜¯æ˜¾ç¤ºå…¨éƒ¨ 3æ˜¯è¿½åŠ 
 
     Vector<WString> vecAllTagName = new Vector<WString>();
-    Map<WString, Vector<WString>> MapvecSubscribeTagsName = new HashMap<>();//´øÉè±¸ÃûµÄTagName
+    Map<WString, Vector<WString>> MapvecSubscribeTagsName = new HashMap<>();//å¸¦è®¾å¤‡åçš„TagName
     List asynclist;
     List synclist;
     List subscrilist;
@@ -64,7 +64,7 @@ public class demo {
     public static void main(String[] args) {
         try {
 
-            UIManager.put("RootPane.setupButtonVisible", false);//Òş²ØÉèÖÃ
+            UIManager.put("RootPane.setupButtonVisible", false);//éšè—è®¾ç½®
             BeautyEyeLNFHelper.frameBorderStyle = BeautyEyeLNFHelper.FrameBorderStyle.generalNoTranslucencyShadow;
             org.jb2011.lnf.beautyeye.BeautyEyeLNFHelper.launchBeautyEyeLNF();
 
@@ -76,7 +76,7 @@ public class demo {
                 try {
                     demo window = new demo();
                     //***********************//
-                    LoginForm loginForm = new LoginForm(window.frame);//µÇÂ¼½çÃæµÄ¹¹Ôìº¯Êı
+                    LoginForm loginForm = new LoginForm(window.frame);//ç™»å½•ç•Œé¢çš„æ„é€ å‡½æ•°
 
                     //***********************//
 
@@ -102,7 +102,7 @@ public class demo {
     private void initialize() {
         classDemoClient client = new classDemoClient();
 
-        /************************ ±êÇ©³õÊ¼»¯ **************************/
+        /************************ æ ‡ç­¾åˆå§‹åŒ– **************************/
 
         frame = new JFrame();
         frame.setResizable(false);
@@ -112,11 +112,11 @@ public class demo {
 
         JLabel lblNewLabel = new JLabel("IP\uFF1A");
         lblNewLabel.setBounds(12, 332, 40, 16);
-        lblNewLabel.setFont(new Font("ËÎÌå", Font.BOLD, 15));
+        lblNewLabel.setFont(new Font("å®‹ä½“", Font.BOLD, 15));
 
         JLabel lblNewLabel_1 = new JLabel("PORT\uFF1A");
         lblNewLabel_1.setBounds(12, 363, 63, 16);
-        lblNewLabel_1.setFont(new Font("ËÎÌå", Font.BOLD, 15));
+        lblNewLabel_1.setFont(new Font("å®‹ä½“", Font.BOLD, 15));
 
         text_ip = new JTextField();
         text_ip.setBounds(70, 329, 80, 22);
@@ -128,9 +128,9 @@ public class demo {
         text_port.setText("12380");
         text_port.setColumns(10);
 
-        JLabel label = new JLabel("\u6307\u793A\u706F\uFF1A");
+        JLabel label = new JLabel("\u6307\u793A\u706F\uFF1A");//""å«ä¹‰æ˜¯æŒ‡ç¤ºç¯çš„unicodeç 
         label.setBounds(12, 290, 63, 16);
-        label.setFont(new Font("ËÎÌå", Font.BOLD, 14));
+        label.setFont(new Font("å®‹ä½“", Font.BOLD, 14));
 
         JLabel lamp = new JLabel("\u5173");
         lamp.setBounds(87, 283, 45, 30);
@@ -138,9 +138,11 @@ public class demo {
         lamp.setBackground(Color.GRAY);
         lamp.setHorizontalAlignment(SwingConstants.CENTER);
 
-        JLabel label_1 = new JLabel("\u4E9A\u63A7\u79D1\u6280");
+
+        JLabel label_1 = new JLabel();
+        label_1.setText("CISDI");
         label_1.setForeground(Color.WHITE);
-        label_1.setFont(new Font("»ªÎÄĞĞ¿¬", Font.BOLD, 56));
+        label_1.setFont(new Font("åæ–‡è¡Œæ¥·", Font.BOLD, 56));
         label_1.setBounds(351, 0, 250, 60);
         frame.getContentPane().add(label_1);
 
@@ -154,7 +156,7 @@ public class demo {
         panel_1.setBounds(170, 60, 2, 2010);
         frame.getContentPane().add(panel_1);
 
-        /// ---------------------¶©ÔÄÃæ°å-------------------///
+        /// ---------------------è®¢é˜…é¢æ¿-------------------///
 
         JPanel panel_subscribe = new JPanel();
         panel_subscribe.setBackground(Color.WHITE);
@@ -164,17 +166,17 @@ public class demo {
         panel_subscribe.setVisible(false);
         panel_subscribe.setLayout(null);
 
-        JLabel lblNewLabel_3 = new JLabel("¶©ÔÄ");
+        JLabel lblNewLabel_3 = new JLabel("è®¢é˜…");
         lblNewLabel_3.setForeground(new Color(153, 153, 153));
-        lblNewLabel_3.setFont(new Font("»ªÎÄ·ÂËÎ", Font.BOLD, 21));
+        lblNewLabel_3.setFont(new Font("åæ–‡ä»¿å®‹", Font.BOLD, 21));
         lblNewLabel_3.setBounds(234, 11, 44, 28);
         panel_subscribe.add(lblNewLabel_3);
-        //lktodo:¶©ÔÄ exclµ¼Èë°´Å¥Ìí¼Ó
+        //lktodo:è®¢é˜… exclå¯¼å…¥æŒ‰é’®æ·»åŠ 
         JButton exclButton_subscription = new JButton();
         exclButton_subscription.setUI(new BEButtonUI().setNormalColor(BEButtonUI.NormalColor.lightBlue));
-        exclButton_subscription.setFont(new Font("»ªÎÄ·ÂËÎ", Font.BOLD, 15));
+        exclButton_subscription.setFont(new Font("åæ–‡ä»¿å®‹", Font.BOLD, 15));
         exclButton_subscription.setBounds(570, 11, 110, 28);
-        exclButton_subscription.setText("µ¼ÈëExcl");
+        exclButton_subscription.setText("å¯¼å…¥Excl");
         panel_subscribe.add(exclButton_subscription);
         exclButton_subscription.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent arg0) {
@@ -199,7 +201,7 @@ public class demo {
 
         /// -----------------------------------------------------///
 
-        /// ---------------------Òì²½¶ÁĞ´Ãæ°å-----------------///
+        /// ---------------------å¼‚æ­¥è¯»å†™é¢æ¿-----------------///
 
         JPanel panel_AsyncReadWrite = new JPanel();
         panel_AsyncReadWrite.setBackground(Color.WHITE);
@@ -209,9 +211,9 @@ public class demo {
         panel_AsyncReadWrite.setVisible(false);
         panel_AsyncReadWrite.setLayout(null);
 
-        JLabel lblNewLabel_4 = new JLabel("Òì²½¶ÁĞ´");
+        JLabel lblNewLabel_4 = new JLabel("å¼‚æ­¥è¯»å†™");
         lblNewLabel_4.setForeground(Color.GRAY);
-        lblNewLabel_4.setFont(new Font("ËÎÌå", Font.BOLD, 23));
+        lblNewLabel_4.setFont(new Font("å®‹ä½“", Font.BOLD, 23));
         lblNewLabel_4.setBounds(299, 0, 114, 45);
         panel_AsyncReadWrite.add(lblNewLabel_4);
 
@@ -233,21 +235,21 @@ public class demo {
             }
         };
         model_asyncReadWrite.setColumnIdentifiers(Headname);
-        //model_asyncReadWrite.addRow(Headname);»ù´¡Êı¾İ
+        //model_asyncReadWrite.addRow(Headname);åŸºç¡€æ•°æ®
 
         scrollPane_1.setViewportView(table_asyncReadWrite);
         table_asyncReadWrite.setBorder(new LineBorder(Color.black));
-        //lktodo tableĞŞ¸Ä
+        //lktodo tableä¿®æ”¹
         table_asyncReadWrite.setCellSelectionEnabled(true);
-        table_asyncReadWrite.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);//ĞŞ¸ÄÒ»Ìõ
-        // Ê×ÏÈÍ¨¹ı±í¸ñ¶ÔÏó table »ñÈ¡Ñ¡ÔñÆ÷Ä£ĞÍ
+        table_asyncReadWrite.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);//ä¿®æ”¹ä¸€æ¡
+        // é¦–å…ˆé€šè¿‡è¡¨æ ¼å¯¹è±¡ table è·å–é€‰æ‹©å™¨æ¨¡å‹
         ListSelectionModel selectionModel = table_asyncReadWrite.getSelectionModel();
         selectionModel.addListSelectionListener(new ListSelectionListener() {
             @Override
             public void valueChanged(ListSelectionEvent e) {
-                int selectedRow = table_asyncReadWrite.getSelectedRow(); // »ñÈ¡Ñ¡ÖĞµÄµÚÒ»ĞĞ
-                int selectedColumn = table_asyncReadWrite.getSelectedColumn(); // »ñÈ¡Ñ¡ÖĞµÄµÚÒ»ÁĞ
-                int[] selectedRows = table_asyncReadWrite.getSelectedRows();// »ñÈ¡Ñ¡ÖĞµÄËùÓĞĞĞ
+                int selectedRow = table_asyncReadWrite.getSelectedRow(); // è·å–é€‰ä¸­çš„ç¬¬ä¸€è¡Œ
+                int selectedColumn = table_asyncReadWrite.getSelectedColumn(); // è·å–é€‰ä¸­çš„ç¬¬ä¸€åˆ—
+                int[] selectedRows = table_asyncReadWrite.getSelectedRows();// è·å–é€‰ä¸­çš„æ‰€æœ‰è¡Œ
                 int[] selectedColumns = table_asyncReadWrite.getSelectedColumns();
                 text_asyncWriteTagName.setText(table_asyncReadWrite.getValueAt(selectedRow,0).toString());
             }
@@ -257,7 +259,7 @@ public class demo {
 
         /// -------------------------------------------------------///
 
-        /// ----------------------Í¬²½¶ÁĞ´-----------------------///
+        /// ----------------------åŒæ­¥è¯»å†™-----------------------///
 
         JPanel panel_SyncReadWrite = new JPanel();
         panel_SyncReadWrite.setBackground(Color.WHITE);
@@ -267,10 +269,10 @@ public class demo {
         panel_SyncReadWrite.setVisible(false);
         panel_SyncReadWrite.setLayout(null);
 
-        JLabel lblNewLabel_2 = new JLabel("Í¬²½¶ÁĞ´");
+        JLabel lblNewLabel_2 = new JLabel("åŒæ­¥è¯»å†™");
         lblNewLabel_2.setBounds(262, 0, 101, 33);
         lblNewLabel_2.setForeground(Color.GRAY);
-        lblNewLabel_2.setFont(new Font("ËÎÌå", Font.BOLD, 23));
+        lblNewLabel_2.setFont(new Font("å®‹ä½“", Font.BOLD, 23));
         panel_SyncReadWrite.add(lblNewLabel_2);
 
         JScrollPane scrollPane_2 = new JScrollPane();
@@ -290,7 +292,7 @@ public class demo {
         panel_SyncReadWrite.add(text_syncReadTagName);
         text_syncReadTagName.setColumns(10);
 
-        JLabel label_2 = new JLabel("\u8F93\u5165\u8BFB\u53D8\u91CF\uFF0C\u7528\",\"\u9694\u5F00\uFF1A");
+        JLabel label_2 = new JLabel("\u8F93\u5165\u8BFB\u53D8\u91CF\uFF0C\u7528\",\"\u9694\u5F00\uFF1A");//è¾“å…¥è¯»å˜é‡ï¼Œç”¨","éš”å¼€ï¼š
         label_2.setBounds(52, 304, 176, 16);
         panel_SyncReadWrite.add(label_2);
 
@@ -348,9 +350,9 @@ public class demo {
 
 
         /// --------------------------------------------------------///
-        /********************** <±êÇ©³õÊ¼»¯END> ****************************/
+        /********************** <æ ‡ç­¾åˆå§‹åŒ–END> ****************************/
 
-        /********************* Á¬½Ó°´Å¥ **************************/
+        /********************* è¿æ¥æŒ‰é’® **************************/
         JButton btn_connect = new JButton("\u8FDE\u63A5");
         btn_connect.setBounds(12, 404, 70, 25);
         btn_connect.setBorder(null);
@@ -363,22 +365,23 @@ public class demo {
                 }
             }
         });
-        /********************* < Á¬½Ó°´Å¥END> **************************/
+        /********************* < è¿æ¥æŒ‰é’®END> **************************/
 
-        /********************* ¶Ï¿ªÁ¬½Ó°´Å¥ **************************/
+		
+        /********************* æ–­å¼€è¿æ¥æŒ‰é’® **************************/
         JButton btn_disconnect = new JButton("\u65AD\u5F00");
         btn_disconnect.setBounds(90, 404, 70, 25);
         btn_disconnect.setBorder(null);
         btn_disconnect.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                if (lamp.getText() == "¿ª") {
+                if (lamp.getText() == "å¼€") {
                     client.funcDisConnect();
                 }
             }
         });
-        /********************* < ¶Ï¿ªÁ¬½Ó°´Å¥END> **************************/
+        /********************* < æ–­å¼€è¿æ¥æŒ‰é’®END> **************************/
 
-        /************************ ¶©ÔÄÑ¡Ïî¿¨ ******************************/
+        /************************ è®¢é˜…é€‰é¡¹å¡ ******************************/
         JButton btnSubscribeChoose = new JButton("\u8BA2\u9605\u529F\u80FD");
         btnSubscribeChoose.setBackground(new Color(137, 140, 135));
         btnSubscribeChoose.setBorder(new LineBorder(Color.WHITE));
@@ -390,9 +393,9 @@ public class demo {
         });
         btnSubscribeChoose.setBounds(0, 143, 170, 43);
         frame.getContentPane().add(btnSubscribeChoose);
-        /************************ < ¶©ÔÄÑ¡Ïî¿¨END> ************************/
+        /************************ < è®¢é˜…é€‰é¡¹å¡END> ************************/
 
-        /************************ Òì²½¶ÁĞ´Ñ¡Ïî¿¨ ****************************/
+        /************************ å¼‚æ­¥è¯»å†™é€‰é¡¹å¡ ****************************/
         JButton btnAsyncReadWrite = new JButton("\u5F02\u6B65\u8BFB\u5199\u529F\u80FD");
         btnAsyncReadWrite.setBackground(new Color(137, 140, 135));
         btnAsyncReadWrite.setBorder(new LineBorder(Color.WHITE));
@@ -458,9 +461,9 @@ public class demo {
                 chosseAsyncRdBtn = 3;
             }
         });
-        /************************ <Òì²½¶ÁĞ´Ñ¡Ïî¿¨END> ***********************/
+        /************************ <å¼‚æ­¥è¯»å†™é€‰é¡¹å¡END> ***********************/
 
-        /************************ Í¬²½¶ÁĞ´Ñ¡Ïî¿¨ ****************************/
+        /************************ åŒæ­¥è¯»å†™é€‰é¡¹å¡ ****************************/
         JButton btnSyncReadWrite = new JButton("\u540C\u6B65\u8BFB\u5199\u529F\u80FD");
         btnSyncReadWrite.setBackground(new Color(137, 140, 135));
         btnSyncReadWrite.setBorder(new LineBorder(Color.WHITE));
@@ -471,24 +474,24 @@ public class demo {
             }
         });
         btnSyncReadWrite.setBounds(0, 60, 170, 43);
-        /************************ <Í¬²½¶ÁĞ´Ñ¡Ïî¿¨END> ************************/
+        /************************ <åŒæ­¥è¯»å†™é€‰é¡¹å¡END> ************************/
 
-        /************************ ¶©ÔÄÈ«²¿±äÁ¿ ****************************/
+        /************************ è®¢é˜…å…¨éƒ¨å˜é‡ ****************************/
         JButton btnSubscribeAllTags = new JButton("\u8BA2\u9605\u5168\u90E8\u53D8\u91CF");
-        btnSubscribeAllTags.setFont(new Font("ËÎÌå", Font.PLAIN, 18));
+        btnSubscribeAllTags.setFont(new Font("å®‹ä½“", Font.PLAIN, 18));
         btnSubscribeAllTags.setBorder(null);
         btnSubscribeAllTags.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                //vecAllTagName = client.funcSubscribeAllTags();//ËùÓĞ¶©ÔÄ
+                //vecAllTagName = client.funcSubscribeAllTags();//æ‰€æœ‰è®¢é˜…
                 MapvecSubscribeTagsName = client.funcSubscribeAllTags_Device();
                 flagSubscribeAll = 1;
             }
         });
         btnSubscribeAllTags.setBounds(292, 384, 140, 30);
         panel_subscribe.add(btnSubscribeAllTags);
-        /************************ <¶©ÔÄÈ«²¿±äÁ¿END> ************************/
+        /************************ <è®¢é˜…å…¨éƒ¨å˜é‡END> ************************/
 
-        /************************ Òì²½¶Á°´Å¥ ****************************/
+        /************************ å¼‚æ­¥è¯»æŒ‰é’® ****************************/
         JButton btn_asyncRead = new JButton("\u5F02\u6B65\u8BFB");
         btn_asyncRead.setBorder(null);
         btn_asyncRead.addActionListener(new ActionListener() {
@@ -503,18 +506,18 @@ public class demo {
         btn_asyncRead.setBounds(51, 390, 103, 25);
         panel_AsyncReadWrite.add(btn_asyncRead);
 
-        //lktodo:Òì²½exclµ¼Èë°´Å¥Ìí¼Ó
+        //lktodo:å¼‚æ­¥exclå¯¼å…¥æŒ‰é’®æ·»åŠ 
         JButton exclButton_async = new JButton();
         exclButton_async.setUI(new BEButtonUI().setNormalColor(BEButtonUI.NormalColor.lightBlue));
-        exclButton_async.setFont(new Font("»ªÎÄ·ÂËÎ", Font.BOLD, 15));
+        exclButton_async.setFont(new Font("åæ–‡ä»¿å®‹", Font.BOLD, 15));
         exclButton_async.setBounds(570, 11, 110, 28);
-        exclButton_async.setText("µ¼ÈëExcl");
+        exclButton_async.setText("å¯¼å…¥Excl");
         panel_AsyncReadWrite.add(exclButton_async);
         exclButton_async.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent arg0) {
                 asynclist= ExclImport.exclimport();
                 model_asyncReadWrite.setRowCount(0);
-                String strAllTagName =asynclist.get(0).toString();//Æ´½Ó×Ö·û´®
+                String strAllTagName =asynclist.get(0).toString();//æ‹¼æ¥å­—ç¬¦ä¸²
                 for(int i=1;i<asynclist.size();i++){
                    strAllTagName=strAllTagName+","+asynclist.get(i).toString();
                 }
@@ -525,27 +528,28 @@ public class demo {
             }
         });
 
-        //lktodo:Òì²½ÏÔÊ¾°´Å¥Ìí¼Ó
+        //lktodo:å¼‚æ­¥æ˜¾ç¤ºæŒ‰é’®æ·»åŠ 
         JButton Button_async_show = new JButton();
         Button_async_show.setBounds(170, 390, 103, 25);
-        Button_async_show.setText("ÏÔÊ¾È«²¿");
+        Button_async_show.setText("æ˜¾ç¤ºå…¨éƒ¨");
         panel_AsyncReadWrite.add(Button_async_show);
         Button_async_show.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent arg0) {
                 List tagNamelist= asynclist;
-                model_asyncReadWrite.setRowCount(0);//ÇåÁãÔ­À´µÄÊı¾İ
-                String strAllTagName =tagNamelist.get(0).toString();//Æ´½Ó×Ö·û´®
+                model_asyncReadWrite.setRowCount(0);//æ¸…é›¶åŸæ¥çš„æ•°æ®
+                String strAllTagName =tagNamelist.get(0).toString();//æ‹¼æ¥å­—ç¬¦ä¸²
                 for(int i=1;i<tagNamelist.size();i++){
                     strAllTagName=strAllTagName+","+tagNamelist.get(i).toString();
-                }
+                } 
                 String[] tagNames = strAllTagName.split(",");
                 client.funcAsyncRead(tagNames);
                 flagAsyncReadComplete = 1;
+			
             }
         });
-        /************************ <Òì²½¶Á°´Å¥END> ************************/
+        /************************ <å¼‚æ­¥è¯»æŒ‰é’®END> ************************/
 
-        /************************ Òì²½Ğ´°´Å¥ ****************************/
+        /************************ å¼‚æ­¥å†™æŒ‰é’® ****************************/
         JButton btn_asyncWrite = new JButton("\u5F02\u6B65\u5199");
         btn_asyncWrite.setBorder(null);
         btn_asyncWrite.addActionListener(new ActionListener() {
@@ -565,9 +569,9 @@ public class demo {
         });
         btn_asyncWrite.setBounds(418, 422, 103, 25);
         panel_AsyncReadWrite.add(btn_asyncWrite);
-        /************************ <Òì²½Ğ´°´Å¥END> ************************/
+        /************************ <å¼‚æ­¥å†™æŒ‰é’®END> ************************/
 
-        /************************* Í¬²½¶Á±äÁ¿ ************************/
+        /************************* åŒæ­¥è¯»å˜é‡ ************************/
         JButton btn_syncReadWrite = new JButton("\u540C\u6B65\u8BFB");
         btn_syncReadWrite.setBorder(null);
         btn_syncReadWrite.addActionListener(new ActionListener() {
@@ -582,26 +586,26 @@ public class demo {
         panel_SyncReadWrite.add(btn_syncReadWrite);
 
 
-        //lktodo:Í¬²½exclµ¼Èë°´Å¥Ìí¼Ó
+        //lktodo:åŒæ­¥exclå¯¼å…¥æŒ‰é’®æ·»åŠ 
         JButton exclButton_sync = new JButton();
         exclButton_sync.setUI(new BEButtonUI().setNormalColor(BEButtonUI.NormalColor.lightBlue));
-        exclButton_sync.setFont(new Font("»ªÎÄ·ÂËÎ", Font.BOLD, 15));
+        exclButton_sync.setFont(new Font("åæ–‡ä»¿å®‹", Font.BOLD, 15));
         exclButton_sync.setBounds(570, 11, 110, 28);
-        exclButton_sync.setText("µ¼ÈëExcl");
+        exclButton_sync.setText("å¯¼å…¥Excl");
         panel_SyncReadWrite.add(exclButton_sync);
         exclButton_sync.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent arg0) {
                 model_syncReadWrite.setRowCount(0);
-                synclist= ExclImport.exclimport();//Í¬²½¶ÁÊı¾İ
+                synclist= ExclImport.exclimport();//åŒæ­¥è¯»æ•°æ®
                 flagSyncRead=2;
                 flagSyncReadComplete = 1;
             }
         });
 
-        //lktodo:Í¬²½ÏÔÊ¾°´Å¥Ìí¼Ó
+        //lktodo:åŒæ­¥æ˜¾ç¤ºæŒ‰é’®æ·»åŠ 
         JButton Button_sync_show = new JButton();
         Button_sync_show.setBounds(170, 390, 103, 25);
-        Button_sync_show.setText("ÏÔÊ¾È«²¿");
+        Button_sync_show.setText("æ˜¾ç¤ºå…¨éƒ¨");
         panel_SyncReadWrite.add(Button_sync_show);
         Button_sync_show.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent arg0) {
@@ -613,9 +617,9 @@ public class demo {
                 flagSyncReadComplete = 1;
             }
         });
-        /************************ <Í¬²½¶Á°´Å¥END> ************************/
+        /************************ <åŒæ­¥è¯»æŒ‰é’®END> ************************/
 
-        /************************** Í¬²½Ğ´°´Å¥ *****************************/
+        /************************** åŒæ­¥å†™æŒ‰é’® *****************************/
         JButton btn_syncWrite = new JButton("\u540C\u6B65\u5199");
         btn_syncWrite.setBorder(null);
         btn_syncWrite.addActionListener(new ActionListener() {
@@ -635,9 +639,9 @@ public class demo {
         });
         btn_syncWrite.setBounds(410, 418, 103, 25);
         panel_SyncReadWrite.add(btn_syncWrite);
-        /************************ <Í¬²½Ğ´°´Å¥END> **************************/
+        /************************ <åŒæ­¥å†™æŒ‰é’®END> **************************/
 
-        /************************* ½çÃæË¢ĞÂ¶¨Ê±Æ÷ ************************/
+        /************************* ç•Œé¢åˆ·æ–°å®šæ—¶å™¨ ************************/
 
         Timer timer = new Timer();
         timer.schedule(new TimerTask() {
@@ -645,10 +649,10 @@ public class demo {
             public void run() {
                 if (client.funcIsConnect() == 0 && flagConnect == 1) {
                     lamp.setBackground(Color.green);
-                    lamp.setText("¿ª");
+                    lamp.setText("å¼€");
                 } else {
                     lamp.setBackground(Color.gray);
-                    lamp.setText("¹Ø");
+                    lamp.setText("å…³");
                 }
 
                 if (chooseAsyncReadWrite == 1) {
@@ -750,13 +754,13 @@ public class demo {
             }
         }, 800, 800);
 
-        /******************** < ½çÃæ¶¨Ê±Æ÷END> ***********************/
+        /******************** < ç•Œé¢å®šæ—¶å™¨END> ***********************/
 
-        /************************* Êı¾İ¶ÁÈ¡¶¨Ê±Æ÷ *************************/
+        /************************* æ•°æ®è¯»å–å®šæ—¶å™¨ *************************/
         Timer timer_subscribe = new Timer();
         timer_subscribe.schedule(new TimerTask() {
             public void run() {
-                //Í¬²½¶ÁË¢ĞÂ
+                //åŒæ­¥è¯»åˆ·æ–°
                 if ((flagSyncReadComplete == 1) && (lamp.getBackground() == Color.GREEN)) {
                     flagSyncReadComplete = 0;
                     String[] tagNames={};
@@ -768,7 +772,7 @@ public class demo {
                             break;
                         }
                         case 2:{
-                            strAllTagName =synclist.get(0).toString();//Æ´½Ó×Ö·û´®
+                            strAllTagName =synclist.get(0).toString();//æ‹¼æ¥å­—ç¬¦ä¸²
                             for(int i=1;i<synclist.size();i++){
                                 strAllTagName=strAllTagName+","+synclist.get(i).toString();
                             }
@@ -823,12 +827,12 @@ public class demo {
                                     row.add(value.TagValue.TagValue.wstrVal);
                                     break;
                                 default:
-                                    row.add("²»Ö§³ÖÀàĞÍ");
+                                    row.add("ä¸æ”¯æŒç±»å‹");
                                     break;
                             }
 
                             Date TimeStamp = new Date(value.TimeStamp.Seconds.longValue() * 1000);
-                            //tolocaleString¹ıÊ±·½·¨Ìæ´ú
+                            //tolocaleStringè¿‡æ—¶æ–¹æ³•æ›¿ä»£
                             DateFormat ddtf = DateFormat.getDateTimeInstance();
                             row.add("" + ddtf.format(TimeStamp));
                             row.add(value.QualityStamp);
@@ -840,7 +844,7 @@ public class demo {
 
                 }
 
-                //Òì²½¶ÁË¢ĞÂ
+                //å¼‚æ­¥è¯»åˆ·æ–°
                 if ((flagAsyncReadComplete == 1) && (lamp.getBackground() == Color.GREEN)) {
                     flagAsyncReadComplete = 0;
                     Struct_TagInfo[] structTagValue = client.getAsyncReadValue();
@@ -889,12 +893,12 @@ public class demo {
                                         row.add(value.TagValue.TagValue.wstrVal);
                                         break;
                                     default:
-                                        row.add("²»Ö§³ÖÀàĞÍ");
+                                        row.add("ä¸æ”¯æŒç±»å‹");
                                         break;
                                 }
 
                                 Date TimeStamp = new Date(value.TimeStamp.Seconds.longValue() * 1000);
-                                //tolocaleString¹ıÊ±·½·¨Ìæ´ú
+                                //tolocaleStringè¿‡æ—¶æ–¹æ³•æ›¿ä»£
                                 DateFormat ddtf = DateFormat.getDateTimeInstance();
                                 row.add("" + ddtf.format(TimeStamp));
                                 row.add(value.QualityStamp);
@@ -907,15 +911,15 @@ public class demo {
                     }
                 }
 
-                // ¶©ÔÄ±äÁ¿Ë¢ĞÂ
+                // è®¢é˜…å˜é‡åˆ·æ–°
                 if ((btnSubscribeChoose.getBackground() == Color.WHITE) && (lamp.getBackground() == Color.green)) {
-                    model_subscribe.setRowCount(0);//ÇåÁãÖ®Ç°µÄ±äÁ¿Öµ
+                    model_subscribe.setRowCount(0);//æ¸…é›¶ä¹‹å‰çš„å˜é‡å€¼
                     if (vecAllTagName.size() > 0 || false) {
                         for (int i = 1; i < vecAllTagName.size(); i++) {
                             WString tagName = vecAllTagName.get(i);
-                            Struct_TagInfo value = client.funcGetTagValue(tagName);//¶©ÔÄ·¢ËÍµÄtagname
+                            Struct_TagInfo value = client.funcGetTagValue(tagName);//è®¢é˜…å‘é€çš„tagname
                             Vector row = new Vector();
-                            row.add(vecAllTagName.get(0)); //Éè±¸Ãû×ÖÌí¼Ó
+                            row.add(vecAllTagName.get(0)); //è®¾å¤‡åå­—æ·»åŠ 
                             if (value != null) {
                                 row.add(tagName);
                                 switch ((int) value.TagValue.ValueType) {
@@ -953,12 +957,12 @@ public class demo {
                                         row.add(value.TagValue.TagValue.wstrVal);
                                         break;
                                     default:
-                                        row.add("²»Ö§³ÖÀàĞÍ");
+                                        row.add("ä¸æ”¯æŒç±»å‹");
                                         break;
                                 }
 
                                 Date TimeStamp = new Date(value.TimeStamp.Seconds.longValue() * 1000);
-                                //tolocaleString¹ıÊ±·½·¨Ìæ´ú
+                                //tolocaleStringè¿‡æ—¶æ–¹æ³•æ›¿ä»£
                                 DateFormat ddtf = DateFormat.getDateTimeInstance();
                                 row.add("" + ddtf.format(TimeStamp));
                                 row.add(value.QualityStamp);
@@ -969,9 +973,9 @@ public class demo {
                         }
                     }
                 }
-                //Todo:µ¼ÈëµÄÊı¾İ¶©ÔÄË¢ĞÂ
+                //Todo:å¯¼å…¥çš„æ•°æ®è®¢é˜…åˆ·æ–°
                 if ((btnSubscribeChoose.getBackground() == Color.WHITE) && (lamp.getBackground() == Color.green)) {
-                    model_subscribe.setRowCount(0);//ÇåÁãÖ®Ç°µÄ±äÁ¿Öµ
+                    model_subscribe.setRowCount(0);//æ¸…é›¶ä¹‹å‰çš„å˜é‡å€¼
 
                     if (MapvecSubscribeTagsName.size() > 0) {
                         Iterator<Map.Entry<WString, Vector<WString>>> entries = MapvecSubscribeTagsName.entrySet().iterator();
@@ -979,8 +983,8 @@ public class demo {
                             Map.Entry<WString, Vector<WString>> entry = entries.next();
                             for (int i = 0; i < entry.getValue().size(); i++) {
                                 WString tagName = entry.getValue().get(i);
-                                Struct_TagInfo value = client.funcGetTagValue(tagName);//¶©ÔÄ·¢ËÍµÄtagname
-                                //Éè±¸Ãû×ÖÌí¼Ó
+                                Struct_TagInfo value = client.funcGetTagValue(tagName);//è®¢é˜…å‘é€çš„tagname
+                                //è®¾å¤‡åå­—æ·»åŠ 
                                 Vector row = new Vector();
                                 row.add(entry.getKey());
                                 if (value != null) {
@@ -1020,12 +1024,12 @@ public class demo {
                                             row.add(value.TagValue.TagValue.wstrVal);
                                             break;
                                         default:
-                                            row.add("²»Ö§³ÖÀàĞÍ");
+                                            row.add("ä¸æ”¯æŒç±»å‹");
                                             break;
                                     }
 
                                     Date TimeStamp = new Date(value.TimeStamp.Seconds.longValue() * 1000);
-                                    //tolocaleString¹ıÊ±·½·¨Ìæ´ú
+                                    //tolocaleStringè¿‡æ—¶æ–¹æ³•æ›¿ä»£
                                     DateFormat ddtf = DateFormat.getDateTimeInstance();
                                     row.add("" + ddtf.format(TimeStamp));
                                     row.add(value.QualityStamp);
@@ -1045,7 +1049,7 @@ public class demo {
                 }
             }
         }, 1000, 1500);
-        /********************* < ¶©ÔÄ¶¨Ê±Æ÷END> ************************/
+        /********************* < è®¢é˜…å®šæ—¶å™¨END> ************************/
 
         frame.getContentPane().add(btnSyncReadWrite);
         frame.getContentPane().setLayout(null);

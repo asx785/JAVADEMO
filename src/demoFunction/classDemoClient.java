@@ -10,11 +10,11 @@ import com.sun.jna.WString;
 import java.util.*;
 
 public class classDemoClient {
-    //¿Í»§¶ËÀà:IOServerAPICilent
+    //å®¢æˆ·ç«¯ç±»:IOServerAPICilent
     IOServerAPICilent client = new IOServerAPICilent();
-    Timer timer_getTagValue = new Timer();// Êı¾İ»ñÈ¡¶¨Ê±Æ÷
-    Vector<WString> vecSubscribeTagsName = new Vector<WString>();// Ìí¼ÓµÄ¶©ÔÄ±äÁ¿
-    Vector<WString> vecAsyncReadTagsName = new Vector<WString>();// Ìí¼ÓµÄÒì²½¶Á±äÁ¿
+    Timer timer_getTagValue = new Timer();// æ•°æ®è·å–å®šæ—¶å™¨
+    Vector<WString> vecSubscribeTagsName = new Vector<WString>();// æ·»åŠ çš„è®¢é˜…å˜é‡
+    Vector<WString> vecAsyncReadTagsName = new Vector<WString>();// æ·»åŠ çš„å¼‚æ­¥è¯»å˜é‡
     Map<NativeLong, WString> mapIdAndName = new HashMap<NativeLong, WString>();
     Map<WString,Vector<WString>> MapvecSubscribeTagsName=new HashMap<>();
 
@@ -65,15 +65,15 @@ public class classDemoClient {
                     break;
                 }
 
-                try { // Èç¹ûÊı¾İÃ»»ØÀ´×î¶à½«×èÈû1s£¬Èç¹û²»Ï²»¶ÕâÖÖ×èÈûÑÓÊ±£¬
-                    Thread.sleep(10); // ÇëÊ¹ÓÃ´ø½Ó¿ÚµÄ»Øµ÷×¢²áº¯ÊıKSIOJAVAAPIRegisterReadCompleteCallbackFunc
+                try { // å¦‚æœæ•°æ®æ²¡å›æ¥æœ€å¤šå°†é˜»å¡1sï¼Œå¦‚æœä¸å–œæ¬¢è¿™ç§é˜»å¡å»¶æ—¶ï¼Œ
+                    Thread.sleep(10); // è¯·ä½¿ç”¨å¸¦æ¥å£çš„å›è°ƒæ³¨å†Œå‡½æ•°KSIOJAVAAPIRegisterReadCompleteCallbackFunc
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
             }
         }
 
-        return TagValueArray; // ´æÔÚnull¶ÁÈ¡µÄÊ±ºòºöÂÔ
+        return TagValueArray; // å­˜åœ¨nullè¯»å–çš„æ—¶å€™å¿½ç•¥
     }
 
     public WString funcGetTagNameById(int id) {
@@ -103,7 +103,7 @@ public class classDemoClient {
         }
         Struct_TagInfo_AddName[] structTagValue = client.SyncReadTagsValueReturnNames(client.getHandle(), tagNames,
                 tagNames.length, 0);
-        //È¥ÎŞĞ§Êı¾İ
+        //å»æ— æ•ˆæ•°æ®
         List<Struct_TagInfo_AddName> value=new ArrayList<>();
         for(int i=0;i<structTagValue.length;i++){
             if(structTagValue[i].TagID!=0){
@@ -117,7 +117,7 @@ public class classDemoClient {
 
         return va;
     }
-    //Í¬²½Ğ´·½·¨
+    //åŒæ­¥å†™æ–¹æ³•
     public int funcSyncWrite(String tagName, String tagValue, int type) {
         if ((funcIsConnect() != 0) || (tagName == null) || (tagValue == null)) {
             return -1;
@@ -145,7 +145,7 @@ public class classDemoClient {
         return -2;
     }
 
-    //Òì²½Ğ´·½·¨
+    //å¼‚æ­¥å†™æ–¹æ³•
     public int funcAsyncWrite(String tagName, String tagValue, int type) {
         if ((funcIsConnect() != 0) || (tagName == null) || (tagValue == null)) {
             return -1;
@@ -173,7 +173,7 @@ public class classDemoClient {
         return -2;
     }
 
-    // Á¬½Óioserver 0±íÊ¾³É¹¦£¬false±íÊ¾Ê§°Ü
+    // è¿æ¥ioserver 0è¡¨ç¤ºæˆåŠŸï¼Œfalseè¡¨ç¤ºå¤±è´¥
     public int funcConnect(String ip, String port) {
         if (client.IOServerConnecton(ip, Integer.parseInt(port))) {
             for (int i = 0; i < 51; i++) {
@@ -188,20 +188,20 @@ public class classDemoClient {
                         e.printStackTrace();
                     }
 
-                    if (client.RegisterReadCompleteCallbackFunc(client.getHandle()) != 0) // ×¢²áÒì²½¶Á»Øµ÷
+                    if (client.RegisterReadCompleteCallbackFunc(client.getHandle()) != 0) // æ³¨å†Œå¼‚æ­¥è¯»å›è°ƒ
                     {
-                        System.out.println("RegisterReadCompleteCallbackFunc£º failed");
+                        System.out.println("RegisterReadCompleteCallbackFuncï¼š failed");
                         client.IOServerDisConnect(client.getHandle());
                         return -1;
                     }
-                    if (client.RegisterCollectValueCallbackFunc(client.getHandle()) != 0) // ×¢²á¶©ÔÄ»Øµ÷(»Øµ÷º¯ÊıÒÑ¾­±»·â×°£¬²ÎÊıÊÕ¼¯ÔÚdatabeanÖĞµÄ¶ÔÓ¦map)
+                    if (client.RegisterCollectValueCallbackFunc(client.getHandle()) != 0) // æ³¨å†Œè®¢é˜…å›è°ƒ(å›è°ƒå‡½æ•°å·²ç»è¢«å°è£…ï¼Œå‚æ•°æ”¶é›†åœ¨databeanä¸­çš„å¯¹åº”map)
                     {
-                        System.out.println("RegisterCollectValueCallbackFunc£º failed");
+                        System.out.println("RegisterCollectValueCallbackFuncï¼š failed");
                         client.IOServerDisConnect(client.getHandle());
                         return -1;
                     }
                     if (funcStoreTagIdAndName() < 0) {
-                        System.out.println("funcStoreTagIdAndName£º failed");
+                        System.out.println("funcStoreTagIdAndNameï¼š failed");
                         client.IOServerDisConnect(client.getHandle());
                         return -1;
                     }
@@ -215,30 +215,30 @@ public class classDemoClient {
             return 0;
         }
         client.IOServerDisConnect(client.getHandle());
-        return -2; // Ã»ÓĞ»ñÈ¡µ½¾ä±ú
+        return -2; // æ²¡æœ‰è·å–åˆ°å¥æŸ„
     }
 
-    //¶Ï¿ª¿Í»§¶ËÓëioserverµÄÁ¬½Ó 0±íÊ¾³É¹¦£¬-1±íÊ¾Ê§°Ü
+    //æ–­å¼€å®¢æˆ·ç«¯ä¸ioserverçš„è¿æ¥ 0è¡¨ç¤ºæˆåŠŸï¼Œ-1è¡¨ç¤ºå¤±è´¥
     public int funcDisConnect() {
         return client.IOServerDisConnect(client.getHandle());
     }
 
-    //·µ»Ø»ñÈ¡µÄOPCµÄÖµ
+    //è¿”å›è·å–çš„OPCçš„å€¼
     public Vector<WString> funcSubscribeAllTags() {
         if (funcIsConnect() != 0) {
             return null;
         }
-        // ²ã´Î»¯ä¯ÀÀËùÓĞ±äÁ¿
+        // å±‚æ¬¡åŒ–æµè§ˆæ‰€æœ‰å˜é‡
         vecSubscribeTagsName.clear();
-        //channelPropertiesÊÇio·¢¹ıÀ´µÄ´óÀàÇşµÀ ÀïÃæ°üº¬Éè±¸
+        //channelPropertiesæ˜¯ioå‘è¿‡æ¥çš„å¤§ç±»æ¸ é“ é‡Œé¢åŒ…å«è®¾å¤‡
         Struct_ChannelProperty[] channelProperties = client.BrowserChannels(client.getHandle(), new WString(""));
 
-        //devicePropertiesÉè±¸ÊôĞÔ
+        //devicePropertiesè®¾å¤‡å±æ€§
         for (int i_channel = 0; i_channel < channelProperties.length; i_channel++) {
             Struct_DeviceProperty[] deviceProperties =
                     client.BrowserDevices(client.getHandle(), channelProperties[i_channel].ChannelName);
 
-            //tagProperties±êÇ©ÊôĞÔTag
+            //tagPropertiesæ ‡ç­¾å±æ€§Tag
             for (int i_device = 0; i_device < deviceProperties.length; i_device++) {
                 Struct_TagProperty[] tagProperties = client.BrowserCollectTags(client.getHandle(),
                         deviceProperties[i_device].DeviceName);
@@ -264,25 +264,25 @@ public class classDemoClient {
 
         return vecSubscribeTagsName;
     }
-
-    //·µ»ØÉè±¸Ãû¼Ó¶©ÔÄµÄ±êÇ©Öµ
+ 
+    //è¿”å›è®¾å¤‡ååŠ è®¢é˜…çš„æ ‡ç­¾å€¼
     public Map<WString,Vector<WString>> funcSubscribeAllTags_Device() {
         if (funcIsConnect() != 0) {
             return null;
         }
-        // ²ã´Î»¯ä¯ÀÀËùÓĞ±äÁ¿
+        // å±‚æ¬¡åŒ–æµè§ˆæ‰€æœ‰å˜é‡
         vecSubscribeTagsName.clear();
         MapvecSubscribeTagsName.clear();
-        //channelPropertiesÊÇio·¢¹ıÀ´µÄ´óÀàÇşµÀ ÀïÃæ°üº¬Éè±¸
+        //channelPropertiesæ˜¯ioå‘è¿‡æ¥çš„å¤§ç±»æ¸ é“ é‡Œé¢åŒ…å«è®¾å¤‡
         Struct_ChannelProperty[] channelProperties = client.BrowserChannels(client.getHandle(), new WString(""));
 
-        //devicePropertiesÉè±¸ÊôĞÔ
+        //devicePropertiesè®¾å¤‡å±æ€§
         for (int i_channel = 0; i_channel < channelProperties.length; i_channel++) {
             Struct_DeviceProperty[] deviceProperties =
                     client.BrowserDevices(client.getHandle(), channelProperties[i_channel].ChannelName);
-            //lktodo:Ä¬ÈÏµÄÒ»¸öÍ¨µÀÏÂÃæÒ»¸öÉè±¸
-            WString DeviceName= deviceProperties[0].DeviceName;//Éè±¸Ãû³Æ
-            //tagProperties±êÇ©ÊôĞÔTag
+            //lktodo:é»˜è®¤çš„ä¸€ä¸ªé€šé“ä¸‹é¢ä¸€ä¸ªè®¾å¤‡
+            WString DeviceName= deviceProperties[0].DeviceName;//è®¾å¤‡åç§°
+            //tagPropertiesæ ‡ç­¾å±æ€§Tag
             for (int i_device = 0; i_device < deviceProperties.length; i_device++) {
                 Struct_TagProperty[] tagProperties = client.BrowserCollectTags(client.getHandle(),
                         deviceProperties[i_device].DeviceName);
@@ -302,15 +302,15 @@ public class classDemoClient {
                     TagIDs[i] = GlobalCilentBean.getInstance().getTagIDbyName(TagNames[i]);
                 }
                 client.SubscribeTagValuesChange(client.getHandle(), TagIDs, TagIDs.length);
-                MapvecSubscribeTagsName.put(DeviceName,vecSubscribeTagsName);//¼ÓÈëµ½MapÖĞ
-                vecSubscribeTagsName=new Vector<>();//Tag¹éÁã
+                MapvecSubscribeTagsName.put(DeviceName,vecSubscribeTagsName);//åŠ å…¥åˆ°Mapä¸­
+                vecSubscribeTagsName=new Vector<>();//Tagå½’é›¶
             }
         }
 
         return MapvecSubscribeTagsName;
     }
 
-    //¶©ÔÄ
+    //è®¢é˜…
     public void Subscribe(WString []TagNames){
         int[] TagIDs = new int[TagNames.length];
         for (int i = 0; i <TagNames.length; i++) {
@@ -323,10 +323,10 @@ public class classDemoClient {
             if (client.getIOServerWorkStatus(client.getHandle()) == 0) {
                 return 0;
             } else {
-                return -1;    //IOServerÃ»Æô¶¯
+                return -1;    //IOServeræ²¡å¯åŠ¨
             }
         }
-        return -2;    //Á¬½Ó¶Ï¿ª
+        return -2;    //è¿æ¥æ–­å¼€
     }
 
 }
