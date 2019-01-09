@@ -17,6 +17,8 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.sql.Date;
 import java.text.DateFormat;
 import java.util.*;
@@ -46,6 +48,8 @@ public class demo {
     List asynclist;
     List synclist;
     List subscrilist;
+    WString subscri_device_list[]={};//设备名字的获取
+    WString subscri_device=null;
 
 
     private JTable table_subscribe;
@@ -76,8 +80,8 @@ public class demo {
                 try {
                     demo window = new demo();
                     //***********************//
-                    LoginForm loginForm = new LoginForm(window.frame);//登录界面的构造函数
-
+                    //LoginForm loginForm = new LoginForm(window.frame);//登录界面的构造函数
+                    window.frame.setVisible(true);
                     //***********************//
 
 
@@ -184,7 +188,7 @@ public class demo {
             }
         });
 
-        String[] subscribHeadename = {"DeviceName", "TagName", "TagValue", "Time", "Quality", "Id"};
+        String[] subscribHeadename = {"设备名", "标签名", "标签值", "时间", "质量情况", "标签ID"};
 
         JScrollPane scrollPane = new JScrollPane();
         scrollPane.setBounds(12, 50, 509, 260);
@@ -192,9 +196,33 @@ public class demo {
 
         DefaultTableModel model_subscribe = new DefaultTableModel();
 
-        table_subscribe = new JTable(model_subscribe);
+        table_subscribe = new JTable(model_subscribe){
+            //表格不可编辑
+        @Override
+        public boolean isCellEditable(int row, int column) {
+            return false;
+        }
+        };;
         model_subscribe.setColumnIdentifiers(subscribHeadename);
-        model_subscribe.addRow(subscribHeadename);
+        //model_subscribe.addRow(subscribHeadename);
+        //lktodo 订阅table修改
+        table_subscribe.setCellSelectionEnabled(true);
+        table_subscribe.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);//修改一条
+        // 首先通过表格对象 table 获取选择器模型
+        ListSelectionModel selectionModel_subscribe = table_subscribe.getSelectionModel();
+        selectionModel_subscribe.addListSelectionListener(new ListSelectionListener() {
+            @Override
+            public void valueChanged(ListSelectionEvent e) {
+                int selectedRow = table_subscribe.getSelectedRow(); // 获取选中的第一行
+                int selectedColumn = table_subscribe.getSelectedColumn(); // 获取选中的第一列
+                int[] selectedRows = table_subscribe.getSelectedRows();// 获取选中的所有行
+                int[] selectedColumns = table_subscribe.getSelectedColumns();
+                //text_asyncWriteTagName.setText(table_subscribe.getValueAt(selectedRow,0).toString());
+            }
+        });
+
+
+
 
         scrollPane.setViewportView(table_subscribe);
         table_subscribe.setBorder(new LineBorder(Color.black));
@@ -239,7 +267,7 @@ public class demo {
 
         scrollPane_1.setViewportView(table_asyncReadWrite);
         table_asyncReadWrite.setBorder(new LineBorder(Color.black));
-        //lktodo table修改
+        //lktodo 异步table修改
         table_asyncReadWrite.setCellSelectionEnabled(true);
         table_asyncReadWrite.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);//修改一条
         // 首先通过表格对象 table 获取选择器模型
@@ -264,6 +292,7 @@ public class demo {
         JPanel panel_SyncReadWrite = new JPanel();
         panel_SyncReadWrite.setBackground(Color.WHITE);
         panel_SyncReadWrite.setBorder(new LineBorder(new Color(0, 0, 0)));
+
         panel_SyncReadWrite.setBounds(823, 82, 114, 103);
         frame.getContentPane().add(panel_SyncReadWrite);
         panel_SyncReadWrite.setVisible(false);
@@ -286,6 +315,7 @@ public class demo {
 
         scrollPane_2.setViewportView(table_syncReadWrite);
         table_syncReadWrite.setBorder(new LineBorder(Color.black));
+
 
         text_syncReadTagName = new JTextField();
         text_syncReadTagName.setBounds(52, 344, 170, 22);
@@ -484,7 +514,35 @@ public class demo {
             public void actionPerformed(ActionEvent e) {
                 //vecAllTagName = client.funcSubscribeAllTags();//所有订阅
                 MapvecSubscribeTagsName = client.funcSubscribeAllTags_Device();
-                flagSubscribeAll = 1;
+                Iterator<Map.Entry<WString, Vector<WString>>> entries = MapvecSubscribeTagsName.entrySet().iterator();
+                int i=0;//导入数组
+                subscri_device_list=new WString[MapvecSubscribeTagsName.size()];
+                while (entries.hasNext()) {
+                    Map.Entry<WString, Vector<WString>> entry = entries.next();
+                    subscri_device_list[i]=entry.getKey();
+                    i++;
+                }
+                /////////////***添加设备选择下拉框****///////////
+
+
+                final JComboBox<WString> comboBox_device = new JComboBox<WString>(subscri_device_list);
+                //添加条目选中状态改变的监听器
+                comboBox_device.addItemListener(new ItemListener() {
+                    @Override
+                    public void itemStateChanged(ItemEvent e) {
+                        // 只处理选中的状态
+                        if (e.getStateChange() == ItemEvent.SELECTED) {
+                            System.out.println("选中: " + comboBox_device.getSelectedIndex() + " = " + comboBox_device.getSelectedItem());
+                            subscri_device=(WString) comboBox_device.getSelectedItem();//选择的订阅设备名
+                        }
+                    }
+                });
+                //添加下拉框到订阅面板上
+                panel_subscribe.add(comboBox_device);
+                comboBox_device.setVisible(true);
+                comboBox_device.setBounds(12, 250, 120,25);
+
+                flagSubscribeAll = 1;//订阅timer启动
             }
         });
         btnSubscribeAllTags.setBounds(292, 384, 140, 30);
@@ -974,79 +1032,85 @@ public class demo {
                     }
                 }
                 //Todo:导入的数据订阅刷新
-                if ((btnSubscribeChoose.getBackground() == Color.WHITE) && (lamp.getBackground() == Color.green)) {
+                if (flagSubscribeAll==1&&(btnSubscribeChoose.getBackground() == Color.WHITE) && (lamp.getBackground() == Color.green)) {
                     model_subscribe.setRowCount(0);//清零之前的变量值
 
                     if (MapvecSubscribeTagsName.size() > 0) {
                         Iterator<Map.Entry<WString, Vector<WString>>> entries = MapvecSubscribeTagsName.entrySet().iterator();
                         while (entries.hasNext()) {
                             Map.Entry<WString, Vector<WString>> entry = entries.next();
-                            for (int i = 0; i < entry.getValue().size(); i++) {
-                                WString tagName = entry.getValue().get(i);
-                                Struct_TagInfo value = client.funcGetTagValue(tagName);//订阅发送的tagname
-                                //设备名字添加
-                                Vector row = new Vector();
-                                row.add(entry.getKey());
-                                if (value != null) {
-                                    row.add(tagName);
-                                    switch ((int) value.TagValue.ValueType) {
-                                        case 1:
-                                            row.add(value.TagValue.TagValue.bitVal);
-                                            break;
-                                        case 2:
-                                            row.add(value.TagValue.TagValue.i1Val);
-                                            break;
-                                        case 3:
-                                            row.add(value.TagValue.TagValue.i1Val);
-                                            break;
-                                        case 4:
-                                            row.add(value.TagValue.TagValue.i2Val);
-                                            break;
-                                        case 5:
-                                            row.add(value.TagValue.TagValue.i2Val);
-                                            break;
-                                        case 6:
-                                            row.add(value.TagValue.TagValue.i4Val);
-                                            break;
-                                        case 7:
-                                            row.add(value.TagValue.TagValue.i4Val);
-                                            break;
-                                        case 8:
-                                            row.add(value.TagValue.TagValue.i8Val);
-                                            break;
-                                        case 9:
-                                            row.add(value.TagValue.TagValue.r4Val);
-                                            break;
-                                        case 10:
-                                            row.add(value.TagValue.TagValue.r8Val);
-                                            break;
-                                        case 11:
-                                            row.add(value.TagValue.TagValue.wstrVal);
-                                            break;
-                                        default:
-                                            row.add("不支持类型");
-                                            break;
-                                    }
+                            //选择的设备不为空就显示所有订阅
+                            if(subscri_device!=entry.getKey()){
+                                //do something
+                            }else {
+                                for (int i = 0; i < entry.getValue().size(); i++) {
+                                    WString tagName = entry.getValue().get(i);
+                                    Struct_TagInfo value = client.funcGetTagValue(tagName);//订阅发送的tagname
+                                    //设备名字添加
+                                    Vector row = new Vector();
+                                    row.add(entry.getKey());
+                                    if (value != null) {
+                                        row.add(tagName);
+                                        switch ((int) value.TagValue.ValueType) {
+                                            case 1:
+                                                row.add(value.TagValue.TagValue.bitVal);
+                                                break;
+                                            case 2:
+                                                row.add(value.TagValue.TagValue.i1Val);
+                                                break;
+                                            case 3:
+                                                row.add(value.TagValue.TagValue.i1Val);
+                                                break;
+                                            case 4:
+                                                row.add(value.TagValue.TagValue.i2Val);
+                                                break;
+                                            case 5:
+                                                row.add(value.TagValue.TagValue.i2Val);
+                                                break;
+                                            case 6:
+                                                row.add(value.TagValue.TagValue.i4Val);
+                                                break;
+                                            case 7:
+                                                row.add(value.TagValue.TagValue.i4Val);
+                                                break;
+                                            case 8:
+                                                row.add(value.TagValue.TagValue.i8Val);
+                                                break;
+                                            case 9:
+                                                row.add(value.TagValue.TagValue.r4Val);
+                                                break;
+                                            case 10:
+                                                row.add(value.TagValue.TagValue.r8Val);
+                                                break;
+                                            case 11:
+                                                row.add(value.TagValue.TagValue.wstrVal);
+                                                break;
+                                            default:
+                                                row.add("不支持类型");
+                                                break;
+                                        }
 
-                                    Date TimeStamp = new Date(value.TimeStamp.Seconds.longValue() * 1000);
-                                    //tolocaleString过时方法替代
-                                    DateFormat ddtf = DateFormat.getDateTimeInstance();
-                                    row.add("" + ddtf.format(TimeStamp));
-                                    row.add(value.QualityStamp);
-                                    row.add(value.TagID);
-                                    model_subscribe.addRow(row);
-                                    table_subscribe.repaint();
+                                        Date TimeStamp = new Date(value.TimeStamp.Seconds.longValue() * 1000);
+                                        //tolocaleString过时方法替代
+                                        DateFormat ddtf = DateFormat.getDateTimeInstance();
+                                        row.add("" + ddtf.format(TimeStamp));
+                                        row.add(value.QualityStamp);
+                                        row.add(value.TagID);
+                                        model_subscribe.addRow(row);
+                                        table_subscribe.repaint();
+                                    }
                                 }
                             }
+
 
                         }
                     }
                 }
 
-                if (flagSubscribeAll == 1) {
-                    flagSubscribeAll = 0;
-                    model_subscribe.setRowCount(0);
-                }
+//                if (flagSubscribeAll == 1) {
+//                    flagSubscribeAll = 0;
+//                    model_subscribe.setRowCount(0);
+//                }
             }
         }, 1000, 1500);
         /********************* < 订阅定时器END> ************************/
