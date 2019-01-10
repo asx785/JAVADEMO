@@ -310,13 +310,6 @@ public class classDemoClient {
         return MapvecSubscribeTagsName;
     }
 
-    //订阅
-    public void Subscribe(WString []TagNames){
-        int[] TagIDs = new int[TagNames.length];
-        for (int i = 0; i <TagNames.length; i++) {
-            TagIDs[i] = GlobalCilentBean.getInstance().getTagIDbyName(TagNames[i]);
-        }
-    }
 
     public int funcIsConnect() {
         if (client.IOServerIsConnected(client.getHandle()) == true) {
@@ -329,4 +322,33 @@ public class classDemoClient {
         return -2;    //连接断开
     }
 
+    /**
+     * 功能描述: getDevicebyTagName
+     *
+     * @param: [tagname]
+     * @return: java.util.Map<java.lang.String,java.lang.String>
+     * @auther: LK
+     * @date: 2019/1/10 0010 10:27
+     */
+    public Map<String,WString> getDevicebyTagName(String[] tagname){
+        if(MapvecSubscribeTagsName==null){
+            return null;
+        }
+        Iterator<Map.Entry<WString, Vector<WString>>> entries = MapvecSubscribeTagsName.entrySet().iterator();
+        Map<String,WString> map=new HashMap<>();
+        while (entries.hasNext()) {
+            Map.Entry<WString, Vector<WString>> entry = entries.next();
+            Vector<WString> tagn=entry.getValue();
+            for(String w:tagname){
+                for(int i=0;i<tagn.size();i++){
+                    if(w.equals(tagn.get(i).toString())){
+                        map.put(w,entry.getKey());
+                        break;
+                    }
+                }
+            }
+        }
+
+        return map;
+    }
 }
