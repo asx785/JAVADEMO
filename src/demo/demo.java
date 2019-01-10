@@ -4,6 +4,7 @@ import com.ioserver.bean.Struct_TagInfo;
 import com.ioserver.bean.Struct_TagInfo_AddName;
 import com.sun.jna.WString;
 import demoFunction.classDemoClient;
+import lk.loginForm.LoginForm;
 import lk.loginForm.method.ExclImport;
 import org.jb2011.lnf.beautyeye.BeautyEyeLNFHelper;
 import org.jb2011.lnf.beautyeye.ch3_button.BEButtonUI;
@@ -82,8 +83,8 @@ public class demo {
                 try {
                     demo window = new demo();
                     //***********************//
-                    //LoginForm loginForm = new LoginForm(window.frame);//登录界面的构造函数
-                    window.frame.setVisible(true);
+                    LoginForm loginForm = new LoginForm(window.frame);//登录界面的构造函数
+                    //window.frame.setVisible(true);
                     //***********************//
 
 
