@@ -41,15 +41,15 @@ public class demo {
     int chosseAsyncRdBtn = 0;
     int flagConnect = 0;// 1为连接
     /*/flag 判断是同步读、显示全部、追加*/
-    int flagSyncRead=0;//1是同步读 2是显示全部 3是追加
+    int flagSyncRead = 0;//1是同步读 2是显示全部 3是追加
 
     Vector<WString> vecAllTagName = new Vector<WString>();
     Map<WString, Vector<WString>> MapvecSubscribeTagsName = new HashMap<>();//带设备名的TagName
     List asynclist;
     List synclist;
     List subscrilist;
-    WString subscri_device_list[]={};//设备名字的获取
-    WString subscri_device=null;
+    WString subscri_device_list[] = {};//设备名字的获取
+    WString subscri_device = null;
 
 
     private JTable table_subscribe;
@@ -61,6 +61,9 @@ public class demo {
     private JTextField text_asyncWriteTagName;
     private JTextField text_asyncWriteTagValue;
     private JTextField text_asyncReadTagName;
+    private JTextField text_ReadTagName;//订阅下的TagName
+    private JTextField text_WriteTagValue;//订阅下写操作的TagValue
+    private JTextField text_WriteTagName;//订阅下写操作的TagName
 
     /**
      * Launch the application.
@@ -141,8 +144,8 @@ public class demo {
         lamp.setOpaque(true);
         lamp.setHorizontalAlignment(SwingConstants.CENTER);
         //设置连接图标
-        ImageIcon lampImg= new ImageIcon("C:\\Users\\Administrator\\Desktop\\JavaDemoCode(x64)\\src\\resources\\picture\\lampclose.jpg");
-        lampImg.setImage(lampImg.getImage().getScaledInstance(lamp.getWidth(), lamp.getHeight(),Image.SCALE_DEFAULT ));
+        ImageIcon lampImg = new ImageIcon("C:\\Users\\Administrator\\Desktop\\JavaDemoCode(x64)\\src\\resources\\picture\\lampclose.jpg");
+        lampImg.setImage(lampImg.getImage().getScaledInstance(lamp.getWidth(), lamp.getHeight(), Image.SCALE_DEFAULT));
         lamp.setIcon(lampImg);
 
         JLabel label_1 = new JLabel();
@@ -172,14 +175,8 @@ public class demo {
         panel_subscribe.setVisible(false);
         panel_subscribe.setLayout(null);
 
-        JLabel lblNewLabel_3 = new JLabel("订阅");
-        lblNewLabel_3.setForeground(new Color(153, 153, 153));
-        lblNewLabel_3.setFont(new Font("华文仿宋", Font.BOLD, 21));
-        lblNewLabel_3.setBounds(234, 11, 44, 28);
-        panel_subscribe.add(lblNewLabel_3);
         //lktodo:订阅 excl导入按钮添加
         JButton exclButton_subscription = new JButton();
-        exclButton_subscription.setUI(new BEButtonUI().setNormalColor(BEButtonUI.NormalColor.lightBlue));
         exclButton_subscription.setFont(new Font("华文仿宋", Font.BOLD, 15));
         exclButton_subscription.setBounds(570, 11, 110, 28);
         exclButton_subscription.setText("导入Excl");
@@ -198,37 +195,46 @@ public class demo {
 
         DefaultTableModel model_subscribe = new DefaultTableModel();
 
-        table_subscribe = new JTable(model_subscribe){
+        table_subscribe = new JTable(model_subscribe) {
             //表格不可编辑
-        @Override
-        public boolean isCellEditable(int row, int column) {
-            return false;
-        }
-        };;
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
+
         model_subscribe.setColumnIdentifiers(subscribHeadename);
 
+        table_subscribe.getColumnModel().getColumn(2).setPreferredWidth(30);//value
+        table_subscribe.getColumnModel().getColumn(3).setPreferredWidth(120);// 时间列宽设置为100
+        table_subscribe.getColumnModel().getColumn(4).setPreferredWidth(30);// 质量列宽设置为20
         table_subscribe.setCellSelectionEnabled(true);
         table_subscribe.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);//修改一条
+        scrollPane.setViewportView(table_subscribe);
+        table_subscribe.setBorder(new LineBorder(Color.black));
         // 首先通过表格对象 table 获取选择器模型
         ListSelectionModel selectionModel_subscribe = table_subscribe.getSelectionModel();
         selectionModel_subscribe.addListSelectionListener(new ListSelectionListener() {
             @Override
             public void valueChanged(ListSelectionEvent e) {
+
                 int selectedRow = table_subscribe.getSelectedRow(); // 获取选中的第一行
-                int selectedColumn = table_subscribe.getSelectedColumn(); // 获取选中的第一列
-                int[] selectedRows = table_subscribe.getSelectedRows();// 获取选中的所有行
-                int[] selectedColumns = table_subscribe.getSelectedColumns();
-                //text_asyncWriteTagName.setText(table_subscribe.getValueAt(selectedRow,0).toString());
+                if(selectedRow==-1){//持续刷新 结果错误返回
+                    return;
+                }
+                System.out.println(selectedRow);
+//                int selectedColumn = table_subscribe.getSelectedColumn(); // 获取选中的第一列
+//                int[] selectedRows = table_subscribe.getSelectedRows();// 获取选中的所有行
+//                int[] selectedColumns = table_subscribe.getSelectedColumns();
+                text_WriteTagName.setText(table_subscribe.getValueAt(selectedRow,1).toString());
+
             }
         });
 
 
 
 
-        scrollPane.setViewportView(table_subscribe);
-        table_subscribe.setBorder(new LineBorder(Color.black));
-
-        /// -----------------------------------------------------///
+        /*/ -----------------------------------------------------/*/
 
         /// ---------------------异步读写面板-----------------///
 
@@ -257,7 +263,7 @@ public class demo {
 
         String[] Headname = {"TagName", "TagValue", "Time", "Quality", "Id"};
         DefaultTableModel model_asyncReadWrite = new DefaultTableModel();
-        JTable table_asyncReadWrite = new JTable(model_asyncReadWrite){
+        JTable table_asyncReadWrite = new JTable(model_asyncReadWrite) {
             @Override
             public boolean isCellEditable(int row, int column) {
                 return false;
@@ -280,10 +286,9 @@ public class demo {
                 int selectedColumn = table_asyncReadWrite.getSelectedColumn(); // 获取选中的第一列
                 int[] selectedRows = table_asyncReadWrite.getSelectedRows();// 获取选中的所有行
                 int[] selectedColumns = table_asyncReadWrite.getSelectedColumns();
-                text_asyncWriteTagName.setText(table_asyncReadWrite.getValueAt(selectedRow,0).toString());
+                text_asyncWriteTagName.setText(table_asyncReadWrite.getValueAt(selectedRow, 0).toString());
             }
         });
-
 
 
         /// -------------------------------------------------------///
@@ -398,7 +403,7 @@ public class demo {
         });
         /********************* < 连接按钮END> **************************/
 
-		
+
         /********************* 断开连接按钮 **************************/
         JButton btn_disconnect = new JButton("\u65AD\u5F00");
         btn_disconnect.setBounds(90, 404, 70, 25);
@@ -413,12 +418,74 @@ public class demo {
         /********************* < 断开连接按钮END> **************************/
 
         /************************ 订阅选项卡 ******************************/
-        JButton btnSubscribeChoose = new JButton("\u8BA2\u9605\u529F\u80FD");
+        JButton btnSubscribeChoose = new JButton("订阅功能");
         btnSubscribeChoose.setBackground(new Color(137, 140, 135));
         btnSubscribeChoose.setBorder(new LineBorder(Color.WHITE));
         btnSubscribeChoose.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 panel_subscribe.setBounds(168, 60, 1487, 1468);
+
+                //同步操作的标签
+                text_ReadTagName = new JTextField();
+                text_ReadTagName.setBounds(52, 344, 170, 22);
+                panel_subscribe.add(text_ReadTagName);
+                text_ReadTagName.setColumns(10);
+
+                JLabel label_2 = new JLabel("输入读变量，用\",\"隔开：");
+                label_2.setBounds(52, 304, 176, 16);
+                panel_subscribe.add(label_2);
+
+                JLabel label_3 = new JLabel("变量名：");
+                label_3.setBounds(410, 307, 63, 16);
+                panel_subscribe.add(label_3);
+
+                text_WriteTagName = new JTextField();
+                text_WriteTagName.setBounds(485, 304, 84, 22);
+                panel_subscribe.add(text_WriteTagName);
+                text_WriteTagName.setColumns(10);
+
+                JLabel label_4 = new JLabel("变量值");
+                label_4.setBounds(410, 342, 63, 16);
+                panel_subscribe.add(label_4);
+
+                text_WriteTagValue = new JTextField();
+                text_WriteTagValue.setBounds(485, 342, 84, 22);
+                panel_subscribe.add(text_WriteTagValue);
+                text_WriteTagValue.setColumns(10);
+
+                JPanel panel_2 = new JPanel();
+                panel_2.setBackground(Color.BLACK);
+                panel_2.setBounds(327, 255, 2, 300);
+                panel_subscribe.add(panel_2);
+
+                JRadioButton rdbtnSyncShort = new JRadioButton("int");
+                rdbtnSyncShort.setBounds(400, 375, 60, 25);
+                panel_subscribe.add(rdbtnSyncShort);
+                rdbtnSyncShort.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent e) {
+                        chooseSyncRdBtn = 1;
+                    }
+                });
+
+                JRadioButton rdbtnSyncFloat = new JRadioButton("float");
+                rdbtnSyncFloat.setBounds(460, 375, 80, 25);
+                panel_subscribe.add(rdbtnSyncFloat);
+                rdbtnSyncFloat.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent e) {
+                        chooseSyncRdBtn = 2;
+                    }
+                });
+
+                JRadioButton rdbtnSyncString = new JRadioButton("string");
+                rdbtnSyncString.setBounds(540, 375, 100, 25);
+                panel_subscribe.add(rdbtnSyncString);
+                rdbtnSyncString.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent e) {
+                        chooseSyncRdBtn = 3;
+                    }
+                });
+
+
                 chooseSubscribe = 1;
             }
         });
@@ -508,32 +575,31 @@ public class demo {
         /************************ <同步读写选项卡END> ************************/
 
         /************************ 订阅全部变量 ****************************/
-        JButton btnSubscribeAllTags = new JButton("\u8BA2\u9605\u5168\u90E8\u53D8\u91CF");
-        btnSubscribeAllTags.setFont(new Font("宋体", Font.PLAIN, 18));
-        btnSubscribeAllTags.setBorder(null);
-        btnSubscribeAllTags.setBounds(292, 384, 140, 30);
+        JButton btnSubscribeAllTags = new JButton("订阅全部变量");
+        btnSubscribeAllTags.setBounds(12, 5, 140, 30);
         panel_subscribe.add(btnSubscribeAllTags);
         btnSubscribeAllTags.addActionListener(new ActionListener() {
+            //订阅全部变量后展示数据
             public void actionPerformed(ActionEvent e) {
                 MapvecSubscribeTagsName = client.funcSubscribeAllTags_Device();
                 Iterator<Map.Entry<WString, Vector<WString>>> entries = MapvecSubscribeTagsName.entrySet().iterator();
-                int i=0;//导入数组
-                subscri_device_list=new WString[MapvecSubscribeTagsName.size()];
+                int i = 0;//导入数组
+                subscri_device_list = new WString[MapvecSubscribeTagsName.size()];
                 while (entries.hasNext()) {
                     Map.Entry<WString, Vector<WString>> entry = entries.next();
-                    subscri_device_list[i]=entry.getKey();
+                    subscri_device_list[i] = entry.getKey();
                     i++;
                 }
-                /////////////***添加设备选择下拉框****///////////
-                JLabel comboBox_device_label=new JLabel("按设备名查看：");//添加标签
+
+                JLabel comboBox_device_label = new JLabel("按设备名查看：");//添加标签
                 final JComboBox<WString> comboBox_device = new JComboBox<WString>(subscri_device_list);
                 //添加下拉框、标签到订阅面板上
                 panel_subscribe.add(comboBox_device);
                 panel_subscribe.add(comboBox_device_label);
                 comboBox_device_label.setVisible(true);
                 comboBox_device.setVisible(true);
-                comboBox_device.setBounds(120, 250, 120,25);
-                comboBox_device_label.setBounds(12,250,110,25);
+                comboBox_device.setBounds(120, 250, 120, 25);
+                comboBox_device_label.setBounds(12, 250, 110, 25);
                 //添加条目选中状态改变的监听器
                 comboBox_device.addItemListener(new ItemListener() {
                     @Override
@@ -541,42 +607,60 @@ public class demo {
                         // 只处理选中的状态
                         if (e.getStateChange() == ItemEvent.SELECTED) {
                             System.out.println("选中: " + comboBox_device.getSelectedIndex() + " = " + comboBox_device.getSelectedItem());
-                            subscri_device=(WString) comboBox_device.getSelectedItem();//选择的订阅设备名
+                            subscri_device = (WString) comboBox_device.getSelectedItem();//选择的订阅设备名
                         }
                     }
                 });
+                subscri_device = subscri_device_list[0];//给定默认值
 
 
                 flagSubscribeAll = 1;//订阅timer启动
             }
         });
 
-
-                    //todo：   订阅面板添加同步操作按钮
-        JButton btn_syncReadWrite = new JButton("\u540C\u6B65\u8BFB");
-        btn_syncReadWrite.setBorder(null);
-        btn_syncReadWrite.addActionListener(new ActionListener() {
+        //暂停/继续刷新按钮
+        JButton btn_subscribe_pause = new JButton("暂停/继续");
+        btn_subscribe_pause.setBounds(160, 5, 100, 30);
+        panel_subscribe.add(btn_subscribe_pause);
+        btn_subscribe_pause.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent arg0) {
-                model_syncReadWrite.setRowCount(0);
-                flagSyncReadComplete = 1;
-                flagSyncRead=1;
+                if(flagSubscribeAll==1){
+                    flagSubscribeAll=2;//暂停table刷新
+                    return;
+                }
+                if(flagSubscribeAll==2){
+                    flagSubscribeAll=1;//继续table刷新
+                    return;
+                }
 
             }
         });
+
+        //todo：   订阅面板添加同步操作按钮
+        JButton btn_syncReadWrite = new JButton("同步读");
+        btn_syncReadWrite.setBorder(null);
         btn_syncReadWrite.setBounds(58, 391, 103, 25);
-        panel_SyncReadWrite.add(btn_syncReadWrite);
+        panel_subscribe.add(btn_syncReadWrite);
+        btn_syncReadWrite.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent arg0) {
+                model_syncReadWrite.setRowCount(0);
+                flagSyncReadComplete = 1;//同步读flag
+                flagSyncRead = 1;
+            }
+        });
+
 
         JButton exclButton_sync = new JButton();
         exclButton_sync.setUI(new BEButtonUI().setNormalColor(BEButtonUI.NormalColor.lightBlue));
         exclButton_sync.setFont(new Font("华文仿宋", Font.BOLD, 15));
         exclButton_sync.setBounds(570, 11, 110, 28);
         exclButton_sync.setText("导入Excl");
-        panel_SyncReadWrite.add(exclButton_sync);
+        panel_subscribe.add(exclButton_sync);
         exclButton_sync.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent arg0) {
                 model_syncReadWrite.setRowCount(0);
-                synclist= ExclImport.exclimport();//同步读数据
-                flagSyncRead=2;
+                synclist = ExclImport.exclimport();//同步读数据
+                flagSyncRead = 2;
                 flagSyncReadComplete = 1;
             }
         });
@@ -584,14 +668,14 @@ public class demo {
         JButton Button_sync_show = new JButton();
         Button_sync_show.setBounds(170, 390, 103, 25);
         Button_sync_show.setText("显示全部");
-        panel_SyncReadWrite.add(Button_sync_show);
+        panel_subscribe.add(Button_sync_show);
         Button_sync_show.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent arg0) {
-                if(synclist==null){
+                if (synclist == null) {
                     return;
                 }
                 model_syncReadWrite.setRowCount(0);
-                flagSyncRead=2;
+                flagSyncRead = 2;
                 flagSyncReadComplete = 1;
             }
         });
@@ -615,7 +699,8 @@ public class demo {
             }
         });
         btn_syncWrite.setBounds(410, 418, 103, 25);
-        panel_SyncReadWrite.add(btn_syncWrite);
+        panel_subscribe.add(btn_syncWrite);
+
         /************************ <订阅全部变量END> ************************/
 
         /************************ 异步读按钮 ****************************/
@@ -642,11 +727,11 @@ public class demo {
         panel_AsyncReadWrite.add(exclButton_async);
         exclButton_async.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent arg0) {
-                asynclist= ExclImport.exclimport();
+                asynclist = ExclImport.exclimport();
                 model_asyncReadWrite.setRowCount(0);
-                String strAllTagName =asynclist.get(0).toString();//拼接字符串
-                for(int i=1;i<asynclist.size();i++){
-                   strAllTagName=strAllTagName+","+asynclist.get(i).toString();
+                String strAllTagName = asynclist.get(0).toString();//拼接字符串
+                for (int i = 1; i < asynclist.size(); i++) {
+                    strAllTagName = strAllTagName + "," + asynclist.get(i).toString();
                 }
 
                 String[] tagNames = strAllTagName.split(",");
@@ -662,16 +747,16 @@ public class demo {
         panel_AsyncReadWrite.add(Button_async_show);
         Button_async_show.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent arg0) {
-                List tagNamelist= asynclist;
+                List tagNamelist = asynclist;
                 model_asyncReadWrite.setRowCount(0);//清零原来的数据
-                String strAllTagName =tagNamelist.get(0).toString();//拼接字符串
-                for(int i=1;i<tagNamelist.size();i++){
-                    strAllTagName=strAllTagName+","+tagNamelist.get(i).toString();
-                } 
+                String strAllTagName = tagNamelist.get(0).toString();//拼接字符串
+                for (int i = 1; i < tagNamelist.size(); i++) {
+                    strAllTagName = strAllTagName + "," + tagNamelist.get(i).toString();
+                }
                 String[] tagNames = strAllTagName.split(",");
                 client.funcAsyncRead(tagNames);
                 flagAsyncReadComplete = 1;
-			
+
             }
         });
         /************************ <异步读按钮END> ************************/
@@ -778,13 +863,13 @@ public class demo {
                 if (client.funcIsConnect() == 0 && flagConnect == 1) {
                     //lamp.setBackground(new Color(19,137,80));
                     //设置连接成功图标
-                    ImageIcon lampImg= new ImageIcon("C:\\Users\\Administrator\\Desktop\\JavaDemoCode(x64)\\src\\resources\\picture\\lampopen.jpg");
-                    lampImg.setImage(lampImg.getImage().getScaledInstance(lamp.getWidth(), lamp.getHeight(),Image.SCALE_DEFAULT ));
+                    ImageIcon lampImg = new ImageIcon("C:\\Users\\Administrator\\Desktop\\JavaDemoCode(x64)\\src\\resources\\picture\\lampopen.jpg");
+                    lampImg.setImage(lampImg.getImage().getScaledInstance(lamp.getWidth(), lamp.getHeight(), Image.SCALE_DEFAULT));
                     lamp.setIcon(lampImg);
                 } else {
                     lamp.setBackground(Color.white);
-                    ImageIcon lampImg= new ImageIcon("C:\\Users\\Administrator\\Desktop\\JavaDemoCode(x64)\\src\\resources\\picture\\lampclose.jpg");
-                    lampImg.setImage(lampImg.getImage().getScaledInstance(lamp.getWidth(), lamp.getHeight(),Image.SCALE_DEFAULT ));
+                    ImageIcon lampImg = new ImageIcon("C:\\Users\\Administrator\\Desktop\\JavaDemoCode(x64)\\src\\resources\\picture\\lampclose.jpg");
+                    lampImg.setImage(lampImg.getImage().getScaledInstance(lamp.getWidth(), lamp.getHeight(), Image.SCALE_DEFAULT));
                     lamp.setIcon(lampImg);
                     //lamp.setText("关");
                 }
@@ -897,23 +982,23 @@ public class demo {
                 //同步读刷新
                 if ((flagSyncReadComplete == 1) && (lamp.getBackground() == Color.GREEN)) {
                     flagSyncReadComplete = 0;
-                    String[] tagNames={};
-                    String strAllTagName=null;
-                    switch (flagSyncRead){
-                        case 1:{
-                            strAllTagName=text_syncReadTagName.getText();
-                            tagNames= strAllTagName.split(",");
+                    String[] tagNames = {};
+                    String strAllTagName = null;
+                    switch (flagSyncRead) {
+                        case 1: {
+                            strAllTagName = text_syncReadTagName.getText();
+                            tagNames = strAllTagName.split(",");
                             break;
                         }
-                        case 2:{
-                            strAllTagName =synclist.get(0).toString();//拼接字符串
-                            for(int i=1;i<synclist.size();i++){
-                                strAllTagName=strAllTagName+","+synclist.get(i).toString();
+                        case 2: {
+                            strAllTagName = synclist.get(0).toString();//拼接字符串
+                            for (int i = 1; i < synclist.size(); i++) {
+                                strAllTagName = strAllTagName + "," + synclist.get(i).toString();
                             }
-                            tagNames= strAllTagName.split(",");
+                            tagNames = strAllTagName.split(",");
                             break;
                         }
-                        case 3:{
+                        case 3: {
 
                         }
                     }
@@ -1047,8 +1132,8 @@ public class demo {
 
                 // 订阅变量刷新
                 if ((btnSubscribeChoose.getBackground() == Color.WHITE)) {
-                    model_subscribe.setRowCount(0);//清零之前的变量值
                     if (vecAllTagName.size() > 0 || false) {
+                        model_subscribe.setRowCount(0);//清零之前的变量值
                         for (int i = 1; i < vecAllTagName.size(); i++) {
                             WString tagName = vecAllTagName.get(i);
                             Struct_TagInfo value = client.funcGetTagValue(tagName);//订阅发送的tagname
@@ -1108,16 +1193,16 @@ public class demo {
                     }
                 }
                 //Todo:导入的数据订阅刷新
-                if (flagSubscribeAll==1&&(btnSubscribeChoose.getBackground() == Color.WHITE)) {
-                    model_subscribe.setRowCount(0);//清零之前的变量值
+                if (flagSubscribeAll == 1 && (btnSubscribeChoose.getBackground() == Color.WHITE)) {
                     if (MapvecSubscribeTagsName.size() > 0) {
+                        model_subscribe.setRowCount(0);//清零之前的变量值
                         Iterator<Map.Entry<WString, Vector<WString>>> entries = MapvecSubscribeTagsName.entrySet().iterator();
                         while (entries.hasNext()) {
                             Map.Entry<WString, Vector<WString>> entry = entries.next();
                             //选择的设备不为空就显示所有订阅
-                            if(subscri_device!=entry.getKey()){
+                            if (subscri_device != entry.getKey()) {
                                 //do something
-                            }else {
+                            } else {
                                 for (int i = 0; i < entry.getValue().size(); i++) {
                                     WString tagName = entry.getValue().get(i);
                                     Struct_TagInfo value = client.funcGetTagValue(tagName);//订阅发送的tagname
