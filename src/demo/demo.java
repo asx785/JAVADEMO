@@ -517,6 +517,9 @@ public class demo {
                         model_subscribe.setRowCount(0);//表格清零
                         flagSyncReadComplete = 1;//同步读flag
                         flagSyncRead = 1;
+                        if(flagSubscribeAll==3){//如果是订阅下同步暂停
+                            flagSubscribeAll=1;
+                        }
                     }
                 });
 
@@ -556,7 +559,8 @@ public class demo {
             }
         });
         btnAsyncReadWrite.setBounds(0, 101, 170, 43);
-        frame.getContentPane().add(btnAsyncReadWrite);
+        btnAsyncReadWrite.setEnabled(false);
+        frame.getContentPane().add(btnAsyncReadWrite);//显示异步按钮
 
         JPanel panel_3 = new JPanel();
         panel_3.setBorder(new LineBorder(new Color(0, 0, 0)));
@@ -623,6 +627,7 @@ public class demo {
                 chooseSyncReadWrite = 1;
             }
         });
+        btnSyncReadWrite.setEnabled(false);
         btnSyncReadWrite.setBounds(0, 60, 170, 43);
         /************************ <同步读写选项卡END> ************************/
 
