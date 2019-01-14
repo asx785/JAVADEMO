@@ -114,33 +114,33 @@ public class demo {
         frame = new JFrame();
         frame.setResizable(false);
         frame.getContentPane().setBackground(new Color(237, 240, 232));
-        frame.setBounds(520, 200, 873, 609);//873，609初始值
+        frame.setBounds(420, 150, 1200, 800);//873，609初始值
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         JLabel lblNewLabel = new JLabel("IP\uFF1A");
-        lblNewLabel.setBounds(12, 332, 40, 16);
+        lblNewLabel.setBounds(12, 532, 40, 16);
         lblNewLabel.setFont(new Font("宋体", Font.BOLD, 15));
 
         JLabel lblNewLabel_1 = new JLabel("PORT\uFF1A");
-        lblNewLabel_1.setBounds(12, 363, 63, 16);
+        lblNewLabel_1.setBounds(12, 563, 63, 16);
         lblNewLabel_1.setFont(new Font("宋体", Font.BOLD, 15));
 
         text_ip = new JTextField();
-        text_ip.setBounds(70, 329, 80, 22);
+        text_ip.setBounds(70, 529, 80, 22);
         text_ip.setText("127.0.0.1");
         text_ip.setColumns(10);
 
         text_port = new JTextField();
-        text_port.setBounds(70, 360, 80, 22);
+        text_port.setBounds(70, 560, 80, 22);
         text_port.setText("12380");
         text_port.setColumns(10);
 
         JLabel label = new JLabel("\u6307\u793A\u706F\uFF1A");//""含义是指示灯的unicode码
-        label.setBounds(12, 290, 63, 16);
+        label.setBounds(12, 490, 63, 16);
         label.setFont(new Font("宋体", Font.BOLD, 14));
 
         JLabel lamp = new JLabel();
-        lamp.setBounds(87, 283, 30, 30);
+        lamp.setBounds(87, 483, 30, 30);
         lamp.setOpaque(true);
         lamp.setHorizontalAlignment(SwingConstants.CENTER);
         //设置连接图标
@@ -152,18 +152,46 @@ public class demo {
         label_1.setText("CISDI");
         label_1.setForeground(Color.WHITE);
         label_1.setFont(new Font("华文行楷", Font.BOLD, 56));
-        label_1.setBounds(351, 0, 250, 60);
+        label_1.setBounds(551, 0, 250, 60);
         frame.getContentPane().add(label_1);
 
-        JPanel panel = new JPanel();
+        JPanel panel = new JPanel();//标题panel
         panel.setBackground(new Color(137, 140, 135));
         panel.setBounds(0, 58, 2120, 2);
         frame.getContentPane().add(panel);
 
-        JPanel panel_1 = new JPanel();
+        JPanel panel_1 = new JPanel();//- -一条线
         panel_1.setBackground(Color.WHITE);
         panel_1.setBounds(170, 60, 2, 2010);
         frame.getContentPane().add(panel_1);
+
+        /* 连接按钮 */
+        JButton btn_connect = new JButton("\u8FDE\u63A5");
+        btn_connect.setBounds(12, 604, 70, 25);
+        btn_connect.setBorder(null);
+        btn_connect.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent arg0) {
+                if (client.funcConnect(text_ip.getText(), text_port.getText()) == 0) {
+                    flagConnect = 1;
+                } else {
+                    flagConnect = 0;
+                }
+            }
+        });
+        /* < 连接按钮END> */
+
+
+        /* 断开连接按钮 */
+        JButton btn_disconnect = new JButton("\u65AD\u5F00");
+        btn_disconnect.setBounds(90, 604, 70, 25);
+        btn_disconnect.setBorder(null);
+        btn_disconnect.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                client.funcDisConnect();
+            }
+        });
+        /*< 断开连接按钮END> */
+
 
         /// ---------------------订阅面板-------------------///
 
@@ -178,7 +206,7 @@ public class demo {
         //lktodo:订阅 excl导入按钮添加
         JButton exclButton_subscription = new JButton();
         exclButton_subscription.setFont(new Font("华文仿宋", Font.BOLD, 15));
-        exclButton_subscription.setBounds(570, 11, 110, 28);
+        exclButton_subscription.setBounds(900, 11, 110, 28);
         exclButton_subscription.setText("导入Excl");
         panel_subscribe.add(exclButton_subscription);
         exclButton_subscription.addActionListener(new ActionListener() {
@@ -190,7 +218,7 @@ public class demo {
         String[] subscribHeadename = {"设备名", "标签名", "标签值", "时间", "质量情况", "标签ID"};
 
         JScrollPane scrollPane = new JScrollPane();
-        scrollPane.setBounds(12, 50, 509, 260);
+        scrollPane.setBounds(12, 50, 666, 666);
         panel_subscribe.add(scrollPane);
 
         DefaultTableModel model_subscribe = new DefaultTableModel();
@@ -382,32 +410,6 @@ public class demo {
         /// --------------------------------------------------------///
         /********************** <标签初始化END> ****************************/
 
-        /********************* 连接按钮 **************************/
-        JButton btn_connect = new JButton("\u8FDE\u63A5");
-        btn_connect.setBounds(12, 404, 70, 25);
-        btn_connect.setBorder(null);
-        btn_connect.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent arg0) {
-                if (client.funcConnect(text_ip.getText(), text_port.getText()) == 0) {
-                    flagConnect = 1;
-                } else {
-                    flagConnect = 0;
-                }
-            }
-        });
-        /********************* < 连接按钮END> **************************/
-
-
-        /********************* 断开连接按钮 **************************/
-        JButton btn_disconnect = new JButton("\u65AD\u5F00");
-        btn_disconnect.setBounds(90, 404, 70, 25);
-        btn_disconnect.setBorder(null);
-        btn_disconnect.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                client.funcDisConnect();
-            }
-        });
-        /********************* < 断开连接按钮END> **************************/
 
         /************************ 订阅选项卡 ******************************/
         JButton btnSubscribeChoose = new JButton("订阅功能");
@@ -419,45 +421,50 @@ public class demo {
 
                 //同步操作的标签
                 text_ReadTagName = new JTextField();
-                text_ReadTagName.setBounds(52, 344, 170, 22);
+                text_ReadTagName.setBounds(52, 594, 170, 22);
                 panel_subscribe.add(text_ReadTagName);
                 text_ReadTagName.setColumns(10);
 
                 JLabel label_2 = new JLabel("输入读变量，用\",\"隔开：");
-                label_2.setBounds(52, 304, 176, 16);
+                label_2.setBounds(52, 554, 176, 16);
                 panel_subscribe.add(label_2);
 
                 JLabel label_3 = new JLabel("变量名：");
-                label_3.setBounds(410, 307, 63, 16);
+                label_3.setBounds(410, 557, 63, 16);
                 panel_subscribe.add(label_3);
 
                 text_WriteTagName = new JTextField();
-                text_WriteTagName.setBounds(485, 304, 84, 22);
+                text_WriteTagName.setBounds(485, 554, 84, 22);
                 panel_subscribe.add(text_WriteTagName);
                 text_WriteTagName.setColumns(10);
 
                 JLabel label_4 = new JLabel("变量值");
-                label_4.setBounds(410, 342, 63, 16);
+                label_4.setBounds(410, 592, 63, 16);
                 panel_subscribe.add(label_4);
 
                 text_WriteTagValue = new JTextField();
-                text_WriteTagValue.setBounds(485, 342, 84, 22);
+                text_WriteTagValue.setBounds(485, 592, 84, 22);
                 panel_subscribe.add(text_WriteTagValue);
                 text_WriteTagValue.setColumns(10);
 
-                JPanel panel_2 = new JPanel();
+                JPanel panel_1 = new JPanel();//竖线装饰布局
                 panel_2.setBackground(Color.BLACK);
-                panel_2.setBounds(327, 255, 2, 300);
+                panel_2.setBounds(327, 485, 1, 300);
+                panel_subscribe.add(panel_2);
+
+                JPanel panel_2 = new JPanel();//横线线装饰布局
+                panel_2.setBackground(new Color(240,178,88));
+                panel_2.setBounds(5, 480, 1010, 2);
                 panel_subscribe.add(panel_2);
 
                 JRadioButton rdbtnSyncShort = new JRadioButton("int");
-                rdbtnSyncShort.setBounds(400, 375, 60, 25);
+                rdbtnSyncShort.setBounds(400, 625, 60, 25);
                 panel_subscribe.add(rdbtnSyncShort);
                 JRadioButton rdbtnSyncFloat = new JRadioButton("float");
-                rdbtnSyncFloat.setBounds(460, 375, 80, 25);
+                rdbtnSyncFloat.setBounds(460, 625, 80, 25);
                 panel_subscribe.add(rdbtnSyncFloat);
                 JRadioButton rdbtnSyncString = new JRadioButton("string");
-                rdbtnSyncString.setBounds(540, 375, 100, 25);
+                rdbtnSyncString.setBounds(540, 625, 100, 25);
                 panel_subscribe.add(rdbtnSyncString);
                 rdbtnSyncShort.addActionListener(new ActionListener() {
                     public void actionPerformed(ActionEvent e) {
@@ -503,13 +510,13 @@ public class demo {
                         client.funcSyncWrite(text_WriteTagName.getText(), text_WriteTagValue.getText(), type);
                     }
                 });
-                btn_syncWrite.setBounds(410, 418, 103, 25);
+                btn_syncWrite.setBounds(410, 668, 103, 25);
                 panel_subscribe.add(btn_syncWrite);
 
                 //todo：   订阅面板添加同步操作按钮
                 JButton btn_syncReadWrite = new JButton("同步读");
                 btn_syncReadWrite.setBorder(null);
-                btn_syncReadWrite.setBounds(12, 391, 103, 25);
+                btn_syncReadWrite.setBounds(12, 641, 103, 25);
                 panel_subscribe.add(btn_syncReadWrite);
                 btn_syncReadWrite.addActionListener(new ActionListener() {
                     public void actionPerformed(ActionEvent arg0) {
@@ -528,7 +535,7 @@ public class demo {
 
                 //lktodo:订阅下同步显示按钮添加
                 JButton Button_sync_show = new JButton();
-                Button_sync_show.setBounds(120, 390, 153, 25);
+                Button_sync_show.setBounds(120, 640, 153, 25);
                 Button_sync_show.setText("显示导入的数据");
                 panel_subscribe.add(Button_sync_show);
                 Button_sync_show.addActionListener(new ActionListener() {
@@ -658,8 +665,8 @@ public class demo {
                 panel_subscribe.add(comboBox_device_label);
                 comboBox_device_label.setVisible(true);
                 comboBox_device.setVisible(true);
-                comboBox_device.setBounds(120, 250, 120, 25);
-                comboBox_device_label.setBounds(12, 250, 110, 25);
+                comboBox_device.setBounds(120, 450, 120, 25);
+                comboBox_device_label.setBounds(12, 450, 110, 25);
                 //添加条目选中状态改变的监听器
                 comboBox_device.addItemListener(new ItemListener() {
                     @Override
@@ -919,7 +926,7 @@ public class demo {
                 }
 
                 if (chooseSubscribe == 1) {
-                    scrollPane.setBounds(10, 50, 670, 189);
+                    scrollPane.setBounds(10, 50, 1002, 389);
                     btnAsyncReadWrite.setBackground(new Color(45, 170, 240));
                     btnAsyncReadWrite.repaint();
                     panel_AsyncReadWrite.setVisible(false);
