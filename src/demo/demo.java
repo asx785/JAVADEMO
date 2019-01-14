@@ -6,6 +6,8 @@ import com.sun.jna.WString;
 import demoFunction.classDemoClient;
 import lk.loginForm.LoginForm;
 import lk.loginForm.method.ExclImport;
+import lk.redis.RedisClient;
+import lk.redis.RedisUtil;
 import org.jb2011.lnf.beautyeye.BeautyEyeLNFHelper;
 import org.jb2011.lnf.beautyeye.ch3_button.BEButtonUI;
 
@@ -211,7 +213,7 @@ public class demo {
         panel_subscribe.add(exclButton_subscription);
         exclButton_subscription.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent arg0) {
-                subscrilist=ExclImport.exclimport();
+                subscrilist = ExclImport.exclimport();
             }
         });
 
@@ -246,11 +248,11 @@ public class demo {
             @Override
             public void valueChanged(ListSelectionEvent e) {
                 int selectedRow = table_subscribe.getSelectedRow(); // 获取选中的第一行
-                if(selectedRow==-1){//持续刷新 结果错误返回
+                if (selectedRow == -1) {//持续刷新 结果错误返回
                     return;
                 }
                 System.out.println(selectedRow);
-                text_WriteTagName.setText(table_subscribe.getValueAt(selectedRow,1).toString());
+                text_WriteTagName.setText(table_subscribe.getValueAt(selectedRow, 1).toString());
 
             }
         });
@@ -453,7 +455,7 @@ public class demo {
                 panel_subscribe.add(panel_2);
 
                 JPanel panel_2 = new JPanel();//横线线装饰布局
-                panel_2.setBackground(new Color(240,178,88));
+                panel_2.setBackground(new Color(240, 178, 88));
                 panel_2.setBounds(5, 480, 1010, 2);
                 panel_subscribe.add(panel_2);
 
@@ -488,12 +490,48 @@ public class demo {
                     }
                 });
 
+
+                //todo：   订阅面板添加同步操作按钮
+                JButton btn_syncReadWrite = new JButton("同步读");
+                btn_syncReadWrite.setBorder(null);
+                btn_syncReadWrite.setBounds(12, 641, 103, 25);
+                panel_subscribe.add(btn_syncReadWrite);
+                btn_syncReadWrite.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent arg0) {
+                        if ("".equals(text_ReadTagName.getText())) {
+                            System.out.println("text_ReadTagName is No value");
+                            return;
+                        }
+                        model_subscribe.setRowCount(0);//表格清零
+                        flagSyncReadComplete = 1;//同步读flag
+                        flagSyncRead = 1;
+                        if (flagSubscribeAll == 3) {//如果是订阅下同步暂停
+                            flagSubscribeAll = 1;
+                        }
+                    }
+                });
+
+                JButton Button_sync_show = new JButton();
+                Button_sync_show.setBounds(120, 640, 153, 25);
+                Button_sync_show.setText("显示导入的数据");
+                panel_subscribe.add(Button_sync_show);
+                Button_sync_show.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent arg0) {
+                        if (subscrilist == null) {
+                            return;
+                        }
+                        model_subscribe.setRowCount(0);//清零
+                        flagSyncRead = 2;//同步显示
+                        flagSyncReadComplete = 1;
+                        flagSubscribeAll = 1;//恢复订阅下全部显示
+                    }
+                });
                 ///////////同步写////////
                 JButton btn_syncWrite = new JButton("\u540C\u6B65\u5199");
                 btn_syncWrite.setBorder(null);
                 btn_syncWrite.addActionListener(new ActionListener() {
                     public void actionPerformed(ActionEvent e) {
-                        if("".equals(text_WriteTagName.getText())||"".equals(text_WriteTagValue.getText())){
+                        if ("".equals(text_WriteTagName.getText()) || "".equals(text_WriteTagValue.getText())) {
                             //文本框为空就跳出
                             return;
                         }
@@ -512,44 +550,6 @@ public class demo {
                 });
                 btn_syncWrite.setBounds(410, 668, 103, 25);
                 panel_subscribe.add(btn_syncWrite);
-
-                //todo：   订阅面板添加同步操作按钮
-                JButton btn_syncReadWrite = new JButton("同步读");
-                btn_syncReadWrite.setBorder(null);
-                btn_syncReadWrite.setBounds(12, 641, 103, 25);
-                panel_subscribe.add(btn_syncReadWrite);
-                btn_syncReadWrite.addActionListener(new ActionListener() {
-                    public void actionPerformed(ActionEvent arg0) {
-                        if("".equals(text_ReadTagName.getText())){
-                            System.out.println("text_ReadTagName is No value");
-                            return;
-                        }
-                        model_subscribe.setRowCount(0);//表格清零
-                        flagSyncReadComplete = 1;//同步读flag
-                        flagSyncRead = 1;
-                        if(flagSubscribeAll==3){//如果是订阅下同步暂停
-                            flagSubscribeAll=1;
-                        }
-                    }
-                });
-
-                //lktodo:订阅下同步显示按钮添加
-                JButton Button_sync_show = new JButton();
-                Button_sync_show.setBounds(120, 640, 153, 25);
-                Button_sync_show.setText("显示导入的数据");
-                panel_subscribe.add(Button_sync_show);
-                Button_sync_show.addActionListener(new ActionListener() {
-                    public void actionPerformed(ActionEvent arg0) {
-                        if (subscrilist == null) {
-                            return;
-                        }
-                        model_subscribe.setRowCount(0);//清零
-                        flagSyncRead = 2;//同步显示
-                        flagSyncReadComplete = 1;
-                        flagSubscribeAll=1;//恢复订阅下全部显示
-                    }
-                });
-
 
                 chooseSubscribe = 1;//订阅标签选选择
             }
@@ -673,8 +673,8 @@ public class demo {
                     public void itemStateChanged(ItemEvent e) {
                         // 只处理选中的状态
                         if (e.getStateChange() == ItemEvent.SELECTED) {
-                            if(flagSubscribeAll==3){
-                                flagSubscribeAll=1;//恢复同步暂停
+                            if (flagSubscribeAll == 3) {
+                                flagSubscribeAll = 1;//恢复同步暂停
 
                             }
                             System.out.println("选中: " + comboBox_device.getSelectedIndex() + " = " + comboBox_device.getSelectedItem());
@@ -695,23 +695,21 @@ public class demo {
         panel_subscribe.add(btn_subscribe_pause);
         btn_subscribe_pause.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent arg0) {
-                if(flagSubscribeAll==1){
-                    flagSubscribeAll=2;//暂停table刷新
+                if (flagSubscribeAll == 1) {
+                    flagSubscribeAll = 2;//暂停table刷新
                     return;
                 }
-                if(flagSubscribeAll==2){
-                    flagSubscribeAll=1;//继续table刷新
+                if (flagSubscribeAll == 2) {
+                    flagSubscribeAll = 1;//继续table刷新
                     return;
                 }
-                if(flagSubscribeAll==3){
-                    flagSubscribeAll=1;//恢复同步暂停，table继续全部刷新
+                if (flagSubscribeAll == 3) {
+                    flagSubscribeAll = 1;//恢复同步暂停，table继续全部刷新
                     return;
                 }
 
             }
         });
-
-
 
 
         /************************ <订阅全部变量END> ************************/
@@ -1074,9 +1072,8 @@ public class demo {
                     }
 
                 }
-
                 //Todo:订阅下同步读刷新
-                if ((flagSyncReadComplete == 1) && flagSubscribeAll==1) {
+                if ((flagSyncReadComplete == 1) && flagSubscribeAll == 1) {
                     flagSyncReadComplete = 0;//读一次
                     String[] tagNames = {};
                     String strAllTagName = null;
@@ -1099,14 +1096,14 @@ public class demo {
                     }
 
 
-                    Map<String,WString> tag_devicename=client.getDevicebyTagName(tagNames);// //获取设备名和tag的组合
+                    Map<String, WString> tag_devicename = client.getDevicebyTagName(tagNames);// //获取设备名和tag的组合
                     Struct_TagInfo_AddName[] structTagValue = client.funcSyncRead(tagNames);
                     for (int i = 0; i < structTagValue.length; i++) {
                         Struct_TagInfo_AddName value = structTagValue[i];
 
                         if (value != null) {
                             Vector row = new Vector();
-                            WString tagn=client.funcGetTagNameById((int) value.TagID);
+                            WString tagn = client.funcGetTagNameById((int) value.TagID);
                             row.add(tag_devicename.get(tagn.toString()));//添加设备名
                             row.add(tagn);//添加tagname
 
@@ -1159,7 +1156,7 @@ public class demo {
                             table_subscribe.repaint();
                         }
                     }
-                    flagSubscribeAll=3;//订阅同步下暂停
+                    flagSubscribeAll = 3;//订阅同步下暂停
                 }
                 //异步读刷新
                 if ((flagAsyncReadComplete == 1) && (lamp.getBackground() == Color.GREEN)) {
@@ -1227,7 +1224,6 @@ public class demo {
 
                     }
                 }
-
                 // 订阅变量刷新
                 if ((btnSubscribeChoose.getBackground() == Color.WHITE)) {
                     if (vecAllTagName.size() > 0 || false) {
@@ -1372,6 +1368,79 @@ public class demo {
             }
         }, 1000, 1500);
         /********************* < 订阅定时器END> ************************/
+        /*添加进redis*/
+        RedisClient redisClient = new RedisClient(RedisUtil.getJedis());
+        Timer redistimer = new Timer();
+        redistimer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                if (flagSubscribeAll != 111 && flagSubscribeAll != 0) {
+                    Iterator<Map.Entry<WString, Vector<WString>>> entries = MapvecSubscribeTagsName.entrySet().iterator();
+                    while (entries.hasNext()) {
+                        Map.Entry<WString, Vector<WString>> entry = entries.next();
+                        for (int i = 0; i < entry.getValue().size(); i++) {
+                            WString tagName = entry.getValue().get(i);
+                            Struct_TagInfo value = client.funcGetTagValue(tagName);//订阅发送的tagname
+                            //设备名字添加
+                            Map<String, Object> map = new HashMap<>();
+                            map.put("DeviceName", entry.getKey());
+                            if (value != null) {
+                                map.put("TagName", tagName);
+                                switch ((int) value.TagValue.ValueType) {
+                                    case 1:
+                                        map.put("TagValue", value.TagValue.TagValue.bitVal);
+                                        break;
+                                    case 2:
+                                        map.put("TagValue", value.TagValue.TagValue.i1Val);
+                                        break;
+                                    case 3:
+                                        map.put("TagValue", value.TagValue.TagValue.i1Val);
+                                        break;
+                                    case 4:
+                                        map.put("TagValue", value.TagValue.TagValue.i2Val);
+                                        break;
+                                    case 5:
+                                        map.put("TagValue", value.TagValue.TagValue.i2Val);
+                                        break;
+                                    case 6:
+                                        map.put("TagValue", value.TagValue.TagValue.i4Val);
+                                        break;
+                                    case 7:
+                                        map.put("TagValue", value.TagValue.TagValue.i4Val);
+                                        break;
+                                    case 8:
+                                        map.put("TagValue", value.TagValue.TagValue.i8Val);
+                                        break;
+                                    case 9:
+                                        map.put("TagValue", value.TagValue.TagValue.r4Val);
+                                        break;
+                                    case 10:
+                                        map.put("TagValue", value.TagValue.TagValue.r8Val);
+                                        break;
+                                    case 11:
+                                        map.put("TagValue", value.TagValue.TagValue.wstrVal);
+                                        break;
+                                    default:
+                                        map.put("TagValue", "不支持的类型");
+                                        break;
+                                }
+
+                                Date TimeStamp = new Date(value.TimeStamp.Seconds.longValue() * 1000);
+                                //tolocaleString过时方法替代
+                                DateFormat ddtf = DateFormat.getDateTimeInstance();
+                                map.put("Time", ddtf.format(TimeStamp));
+                                map.put("Quality", value.QualityStamp);
+                                map.put("TagID", value.TagID);
+                                redisClient.writeRedis(map, 0);
+                            }
+                        }
+
+                    }
+
+                }
+
+            }
+        }, 800, 800);
 
         frame.getContentPane().add(btnSyncReadWrite);
         frame.getContentPane().setLayout(null);

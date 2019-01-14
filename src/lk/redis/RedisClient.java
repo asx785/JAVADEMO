@@ -1,5 +1,6 @@
 package lk.redis;
 
+import lk.loginForm.method.ReadProperties;
 import redis.clients.jedis.Jedis;
 
 import java.util.*;
@@ -31,6 +32,8 @@ public class RedisClient {
     public synchronized void writeRedis(Map<String,Object> map,int name_id){
 
         String TagName=null;
+        String DeviceName=null;
+        String name=null;
         Map<String,String> row=new HashMap<String,String>();
         //遍历map 并将Object对象转为String 以Hash存入Redis
         for (Map.Entry<String, Object> entry : map.entrySet()) {
@@ -38,13 +41,15 @@ public class RedisClient {
                 //TagName=entry.getValue().toString()+"@";//保存TagName，方便命名存储 记录式存储
                 TagName=entry.getValue().toString();//保存TagName，方便命名存储
             }
+            if(entry.getKey().equals("DeviceName")){
+                DeviceName=entry.getValue().toString();//保存DeviceName，方便命名存储
+            }
             row.put(entry.getKey(),entry.getValue().toString());
         }
-
+        name=DeviceName+"_"+TagName;
         try {
-
             //jedis.hmset(TagName+name_id,row);//有记录式存储
-            jedis.hmset(TagName,row);
+            jedis.hmset(name,row);
 
         } catch (Exception e) {
             e.printStackTrace();

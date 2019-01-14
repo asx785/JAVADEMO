@@ -7,10 +7,11 @@
     </constraints>
     <properties>
       <autoscrolls value="true"/>
+      <enabled value="true"/>
       <font name="Fira Code" size="20"/>
       <maximumSize width="-1" height="-1"/>
       <minimumSize width="-1" height="-1"/>
-      <opaque value="false"/>
+      <opaque value="true"/>
       <preferredSize width="1200" height="600"/>
       <requestFocusEnabled value="true"/>
       <toolTipText value=""/>
@@ -34,6 +35,10 @@
         </constraints>
         <properties>
           <background color="-1118482"/>
+          <opaque value="true"/>
+          <requestFocusEnabled value="true"/>
+          <verifyInputWhenFocusTarget value="true"/>
+          <visible value="true"/>
         </properties>
         <border type="none"/>
         <children>
