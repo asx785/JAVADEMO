@@ -43,12 +43,12 @@ public class demo {
     /*/flag 判断是同步读、显示全部、追加*/
     int flagSyncRead = 0;//1是同步读 2是显示全部 3是追加
 
-    Vector<WString> vecAllTagName = new Vector<WString>();
+    Vector<WString> vecAllTagName = new Vector<>();
     Map<WString, Vector<WString>> MapvecSubscribeTagsName = new HashMap<>();//带设备名的TagName
     List asynclist;
     List synclist;
     List subscrilist;
-    WString subscri_device_list[] = {};//设备名字的获取
+    WString subscri_device_list[] = {};//设备名字
     WString subscri_device = null;
 
 
@@ -114,7 +114,7 @@ public class demo {
         frame = new JFrame();
         frame.setResizable(false);
         frame.getContentPane().setBackground(new Color(237, 240, 232));
-        frame.setBounds(520, 200, 873, 609);
+        frame.setBounds(520, 200, 873, 609);//873，609初始值
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         JLabel lblNewLabel = new JLabel("IP\uFF1A");
@@ -404,9 +404,7 @@ public class demo {
         btn_disconnect.setBorder(null);
         btn_disconnect.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                if (lamp.getText() == "开") {
-                    client.funcDisConnect();
-                }
+                client.funcDisConnect();
             }
         });
         /********************* < 断开连接按钮END> **************************/
@@ -488,18 +486,19 @@ public class demo {
                 btn_syncWrite.setBorder(null);
                 btn_syncWrite.addActionListener(new ActionListener() {
                     public void actionPerformed(ActionEvent e) {
+                        if("".equals(text_WriteTagName.getText())||"".equals(text_WriteTagValue.getText())){
+                            //文本框为空就跳出
+                            return;
+                        }
                         int type = 0;
                         if (rdbtnSyncShort.isSelected() == true) {
                             type = 1;
-
                         }
                         if (rdbtnSyncFloat.isSelected() == true) {
                             type = 2;
-
                         }
                         if (rdbtnSyncString.isSelected() == true) {
                             type = 3;
-
                         }
                         client.funcSyncWrite(text_WriteTagName.getText(), text_WriteTagValue.getText(), type);
                     }
@@ -514,6 +513,10 @@ public class demo {
                 panel_subscribe.add(btn_syncReadWrite);
                 btn_syncReadWrite.addActionListener(new ActionListener() {
                     public void actionPerformed(ActionEvent arg0) {
+                        if("".equals(text_ReadTagName.getText())){
+                            System.out.println("text_ReadTagName is No value");
+                            return;
+                        }
                         model_subscribe.setRowCount(0);//表格清零
                         flagSyncReadComplete = 1;//同步读flag
                         flagSyncRead = 1;
@@ -523,7 +526,7 @@ public class demo {
                     }
                 });
 
-                //lktodo:订阅同步显示按钮添加
+                //lktodo:订阅下同步显示按钮添加
                 JButton Button_sync_show = new JButton();
                 Button_sync_show.setBounds(120, 390, 153, 25);
                 Button_sync_show.setText("显示导入的数据");
@@ -864,7 +867,6 @@ public class demo {
 
             public void run() {
                 if (client.funcIsConnect() == 0 && flagConnect == 1) {
-                    //lamp.setBackground(new Color(19,137,80));
                     //设置连接成功图标
                     ImageIcon lampImg = new ImageIcon("C:\\Users\\Administrator\\Desktop\\JavaDemoCode(x64)\\src\\resources\\picture\\lampopen.jpg");
                     lampImg.setImage(lampImg.getImage().getScaledInstance(lamp.getWidth(), lamp.getHeight(), Image.SCALE_DEFAULT));
@@ -874,7 +876,6 @@ public class demo {
                     ImageIcon lampImg = new ImageIcon("C:\\Users\\Administrator\\Desktop\\JavaDemoCode(x64)\\src\\resources\\picture\\lampclose.jpg");
                     lampImg.setImage(lampImg.getImage().getScaledInstance(lamp.getWidth(), lamp.getHeight(), Image.SCALE_DEFAULT));
                     lamp.setIcon(lampImg);
-                    //lamp.setText("关");
                 }
 
                 if (chooseAsyncReadWrite == 1) {
@@ -1067,7 +1068,7 @@ public class demo {
 
                 }
 
-                //订阅下同步读刷新
+                //Todo:订阅下同步读刷新
                 if ((flagSyncReadComplete == 1) && flagSubscribeAll==1) {
                     flagSyncReadComplete = 0;//读一次
                     String[] tagNames = {};
@@ -1087,7 +1088,6 @@ public class demo {
                             break;
                         }
                         case 3: {
-                            //todo 1111
                         }
                     }
 

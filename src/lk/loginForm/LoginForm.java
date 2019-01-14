@@ -19,7 +19,7 @@ public class LoginForm {
     private JTextField usernametextField;
     private JTextField passwordTextField;
     private JButton Loginbutton;
-    private JLabel BG;
+
 
 
     public static boolean loginFalg=false;//登录成功验证
@@ -38,7 +38,7 @@ public class LoginForm {
         Dimension screensize = Toolkit.getDefaultToolkit().getScreenSize();
         int width = (int) screensize.getWidth();
         int height = (int) screensize.getHeight();
-        loginframe.setLocation(width / 2 - 300, height / 2 - 200);
+        loginframe.setLocation(width / 2 - 600, height / 2 - 300);
         loginframe.setTitle(" ");
         loginframe.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         loginframe.setResizable(false);
@@ -46,11 +46,26 @@ public class LoginForm {
         loginframe.setVisible(true);
 
 
+        //添加背景图片
+        ImageIcon imageIcon;
+        JLabel imageLabel=new JLabel();
+        imageLabel.setSize(loginJPanel.getSize());
+        imageIcon = new ImageIcon("C:\\Users\\Administrator\\Desktop\\JavaDemoCode(x64)\\src\\resources\\picture\\bg.jpg"); //写入文件路径
+        imageIcon.setImage(imageIcon.getImage().getScaledInstance(imageLabel.getWidth(), imageLabel.getHeight(), Image.SCALE_DEFAULT));
+        imageLabel.setIcon(imageIcon);
+
+        try {
+            loginJPanel.add(imageLabel);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
 //        BG.setSize(400,300);
 //        ImageIcon imageIcon= new ImageIcon("C:\\Users\\Administrator\\Desktop\\JavaDemoCode(x64)\\src\\resources\\picture\\143882949157763955c2cbb3c2d49.jpg");
 //        BG.setSize(loginJPanel.getSize());
 //        BG.setIcon(imageIcon);
-        BG.setFont(new Font("宋体", Font.LAYOUT_NO_LIMIT_CONTEXT, 70));
+        //BG.setFont(new Font("宋体", Font.LAYOUT_NO_LIMIT_CONTEXT, 70));
         /**/
         Properties prop= ReadProperties.getProp();
 
@@ -71,7 +86,6 @@ public class LoginForm {
                 if(username.equals(prop.getProperty("username"))
                         &&bCryptFunction.BCryptPsw(password,prop.getProperty("password"))){
                     loginFalg=true;
-                    //loginframe.setVisible(false);//隐藏登录界面
                     loginframe.dispose();//回收登录界面
                     windowsform.setVisible(true);//显示main界面
                 }else{
