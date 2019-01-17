@@ -19,6 +19,7 @@ public class RedisClient {
 
         this.jedis=jedis;
         jedis.select(2);
+
     }
 
     /**
@@ -46,7 +47,7 @@ public class RedisClient {
             }
             row.put(entry.getKey(),entry.getValue().toString());
         }
-        name=DeviceName+"_"+TagName;
+        name=DeviceName+"-"+TagName;
         try {
             //jedis.hmset(TagName+name_id,row);//有记录式存储
             jedis.hmset(name,row);

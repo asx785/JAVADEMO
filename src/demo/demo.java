@@ -50,8 +50,8 @@ public class demo {
     List asynclist;
     List synclist;
     List subscrilist;
-    WString subscri_device_list[] = {};//设备名字
-    WString subscri_device = null;
+    String subscri_device_list[] = {};//设备名字
+    String subscri_device = null;
 
 
     private JTable table_subscribe;
@@ -152,12 +152,12 @@ public class demo {
 
         JLabel label_1 = new JLabel();
         label_1.setText("CISDI");
-        label_1.setForeground(Color.WHITE);
-        label_1.setFont(new Font("华文行楷", Font.BOLD, 56));
+        label_1.setForeground(new Color(1,83,159));
+        label_1.setFont(new Font("华文行楷", Font.BOLD, 60));
         label_1.setBounds(551, 0, 250, 60);
         frame.getContentPane().add(label_1);
 
-        JPanel panel = new JPanel();//标题panel
+        JPanel panel = new JPanel();//一条线
         panel.setBackground(new Color(137, 140, 135));
         panel.setBounds(0, 58, 2120, 2);
         frame.getContentPane().add(panel);
@@ -168,7 +168,7 @@ public class demo {
         frame.getContentPane().add(panel_1);
 
         /* 连接按钮 */
-        JButton btn_connect = new JButton("\u8FDE\u63A5");
+        JButton btn_connect = new JButton("连接");
         btn_connect.setBounds(12, 604, 70, 25);
         btn_connect.setBorder(null);
         btn_connect.addActionListener(new ActionListener() {
@@ -184,7 +184,7 @@ public class demo {
 
 
         /* 断开连接按钮 */
-        JButton btn_disconnect = new JButton("\u65AD\u5F00");
+        JButton btn_disconnect = new JButton("断开");
         btn_disconnect.setBounds(90, 604, 70, 25);
         btn_disconnect.setBorder(null);
         btn_disconnect.addActionListener(new ActionListener() {
@@ -219,29 +219,24 @@ public class demo {
 
         String[] subscribHeadename = {"设备名", "标签名", "标签值", "时间", "质量情况", "标签ID"};
 
-        JScrollPane scrollPane = new JScrollPane();
-        scrollPane.setBounds(12, 50, 666, 666);
-        panel_subscribe.add(scrollPane);
-
         DefaultTableModel model_subscribe = new DefaultTableModel();
-
         table_subscribe = new JTable(model_subscribe) {
             //表格不可编辑
             @Override
             public boolean isCellEditable(int row, int column) {
                 return false;
             }
-        };
-
+        };//订阅表
         model_subscribe.setColumnIdentifiers(subscribHeadename);
 
         table_subscribe.getColumnModel().getColumn(2).setPreferredWidth(30);//value
         table_subscribe.getColumnModel().getColumn(3).setPreferredWidth(120);// 时间列宽设置为100
         table_subscribe.getColumnModel().getColumn(4).setPreferredWidth(40);// 质量列宽设置为40
-        table_subscribe.setCellSelectionEnabled(true);
+        //table_subscribe.setCellSelectionEnabled(false);//设置是否选择整行
         table_subscribe.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);//修改一条
-        scrollPane.setViewportView(table_subscribe);
         table_subscribe.setBorder(new LineBorder(Color.black));
+        table_subscribe.setSelectionForeground(Color.DARK_GRAY);      // 选中后字体颜色
+        table_subscribe.setSelectionBackground(Color.LIGHT_GRAY);     // 选中后字体背景
         // 首先通过表格对象 table 获取选择器模型
         ListSelectionModel selectionModel_subscribe = table_subscribe.getSelectionModel();
         selectionModel_subscribe.addListSelectionListener(new ListSelectionListener() {
@@ -251,11 +246,14 @@ public class demo {
                 if (selectedRow == -1) {//持续刷新 结果错误返回
                     return;
                 }
-                System.out.println(selectedRow);
                 text_WriteTagName.setText(table_subscribe.getValueAt(selectedRow, 1).toString());
 
             }
         });
+
+        JScrollPane scrollPane = new JScrollPane(table_subscribe);//滑动面板添加表格
+        scrollPane.setBounds(12, 50, 666, 666);
+        panel_subscribe.add(scrollPane);//订阅面板添加滑动面板
 
 
 
@@ -421,6 +419,8 @@ public class demo {
             public void actionPerformed(ActionEvent e) {
                 panel_subscribe.setBounds(168, 60, 1487, 1468);
 
+
+
                 //同步操作的标签
                 text_ReadTagName = new JTextField();
                 text_ReadTagName.setBounds(52, 594, 170, 22);
@@ -492,7 +492,7 @@ public class demo {
 
 
                 //todo：   订阅面板添加同步操作按钮
-                JButton btn_syncReadWrite = new JButton("同步读");
+                JButton btn_syncReadWrite = new JButton("读数据");
                 btn_syncReadWrite.setBorder(null);
                 btn_syncReadWrite.setBounds(12, 641, 103, 25);
                 panel_subscribe.add(btn_syncReadWrite);
@@ -505,9 +505,8 @@ public class demo {
                         model_subscribe.setRowCount(0);//表格清零
                         flagSyncReadComplete = 1;//同步读flag
                         flagSyncRead = 1;
-                        if (flagSubscribeAll == 3) {//如果是订阅下同步暂停
-                            flagSubscribeAll = 1;
-                        }
+                        flagSubscribeAll = 1;
+
                     }
                 });
 
@@ -527,7 +526,7 @@ public class demo {
                     }
                 });
                 ///////////同步写////////
-                JButton btn_syncWrite = new JButton("\u540C\u6B65\u5199");
+                JButton btn_syncWrite = new JButton("写数据");
                 btn_syncWrite.setBorder(null);
                 btn_syncWrite.addActionListener(new ActionListener() {
                     public void actionPerformed(ActionEvent e) {
@@ -645,49 +644,54 @@ public class demo {
         JButton btnSubscribeAllTags = new JButton("订阅全部变量");
         btnSubscribeAllTags.setBounds(12, 5, 140, 30);
         panel_subscribe.add(btnSubscribeAllTags);
+
+        subscri_device_list=new String[1];
+        subscri_device_list[0]="未订阅";
+        JLabel comboBox_device_label = new JLabel("按设备名查看：");//添加标签
+        JComboBox<String> comboBox_device=new JComboBox<>(subscri_device_list);;
+        subscri_device = subscri_device_list[0];//给定默认值未订阅提示
+        //添加下拉框、标签到订阅面板上
+        panel_subscribe.add(comboBox_device);
+        panel_subscribe.add(comboBox_device_label);
+        comboBox_device_label.setVisible(true);
+        comboBox_device.setVisible(true);
+        comboBox_device.setBounds(120, 450, 130, 25);
+        comboBox_device_label.setBounds(12, 450, 110, 25);
+        comboBox_device.addItemListener(new ItemListener() {
+            @Override
+            public void itemStateChanged(ItemEvent e) {
+                //只处理选中的状态
+                if (e.getStateChange() == ItemEvent.SELECTED) {
+                    if (flagSubscribeAll == 3) {
+                        flagSubscribeAll = 1;//恢复同步暂停
+                    }
+                    flagSyncReadComplete=0;//取消同步操作
+                    System.out.println("选中: " + comboBox_device.getSelectedIndex() + " = " + comboBox_device.getSelectedItem());
+                    subscri_device = comboBox_device.getSelectedItem().toString();//选择的订阅设备名
+                }
+            }
+        });
+
+        //订阅全部变量后展示数据
         btnSubscribeAllTags.addActionListener(new ActionListener() {
-            //订阅全部变量后展示数据
             public void actionPerformed(ActionEvent e) {
                 MapvecSubscribeTagsName = client.funcSubscribeAllTags_Device();
                 Iterator<Map.Entry<WString, Vector<WString>>> entries = MapvecSubscribeTagsName.entrySet().iterator();
                 int i = 0;//导入数组
-                subscri_device_list = new WString[MapvecSubscribeTagsName.size()];
+                comboBox_device.removeAllItems();//移除未订阅选项
+                subscri_device_list = new String[MapvecSubscribeTagsName.size()];
                 while (entries.hasNext()) {
                     Map.Entry<WString, Vector<WString>> entry = entries.next();
-                    subscri_device_list[i] = entry.getKey();
+                    subscri_device_list[i] = entry.getKey().toString();
+                    comboBox_device.addItem(entry.getKey().toString());//添加下拉项
                     i++;
                 }
-
-                JLabel comboBox_device_label = new JLabel("按设备名查看：");//添加标签
-                final JComboBox<WString> comboBox_device = new JComboBox<WString>(subscri_device_list);
-                //添加下拉框、标签到订阅面板上
-                panel_subscribe.add(comboBox_device);
-                panel_subscribe.add(comboBox_device_label);
-                comboBox_device_label.setVisible(true);
-                comboBox_device.setVisible(true);
-                comboBox_device.setBounds(120, 450, 120, 25);
-                comboBox_device_label.setBounds(12, 450, 110, 25);
-                //添加条目选中状态改变的监听器
-                comboBox_device.addItemListener(new ItemListener() {
-                    @Override
-                    public void itemStateChanged(ItemEvent e) {
-                        // 只处理选中的状态
-                        if (e.getStateChange() == ItemEvent.SELECTED) {
-                            if (flagSubscribeAll == 3) {
-                                flagSubscribeAll = 1;//恢复同步暂停
-
-                            }
-                            System.out.println("选中: " + comboBox_device.getSelectedIndex() + " = " + comboBox_device.getSelectedItem());
-                            subscri_device = (WString) comboBox_device.getSelectedItem();//选择的订阅设备名
-                        }
-                    }
-                });
-                subscri_device = subscri_device_list[0];//给定默认值
-
 
                 flagSubscribeAll = 1;//订阅timer启动
             }
         });
+
+
 
         //暂停/继续刷新按钮
         JButton btn_subscribe_pause = new JButton("暂停/继续");
@@ -1089,12 +1093,13 @@ public class demo {
                                 strAllTagName = strAllTagName + "," + subscrilist.get(i).toString();
                             }
                             tagNames = strAllTagName.split(",");
+                            model_subscribe.setRowCount(0);//清零之前的变量值
+                            flagSyncReadComplete=1;//继续刷新
                             break;
                         }
                         case 3: {
                         }
                     }
-
 
                     Map<String, WString> tag_devicename = client.getDevicebyTagName(tagNames);// //获取设备名和tag的组合
                     Struct_TagInfo_AddName[] structTagValue = client.funcSyncRead(tagNames);
@@ -1156,7 +1161,9 @@ public class demo {
                             table_subscribe.repaint();
                         }
                     }
-                    flagSubscribeAll = 3;//订阅同步下暂停
+                    if(flagSyncReadComplete==0){
+                        flagSubscribeAll = 3;//订阅同步下暂停
+                    }
                 }
                 //异步读刷新
                 if ((flagAsyncReadComplete == 1) && (lamp.getBackground() == Color.GREEN)) {
@@ -1286,15 +1293,15 @@ public class demo {
                         }
                     }
                 }
-                //Todo:导入的数据订阅刷新
-                if (flagSubscribeAll == 1 && (btnSubscribeChoose.getBackground() == Color.WHITE)) {
+                //Todo:订阅刷新
+                if (flagSubscribeAll == 1 &&flagSyncReadComplete==0&&(btnSubscribeChoose.getBackground() == Color.WHITE)) {
                     if (MapvecSubscribeTagsName.size() > 0) {
                         model_subscribe.setRowCount(0);//清零之前的变量值
                         Iterator<Map.Entry<WString, Vector<WString>>> entries = MapvecSubscribeTagsName.entrySet().iterator();
                         while (entries.hasNext()) {
                             Map.Entry<WString, Vector<WString>> entry = entries.next();
                             //选择的设备不为空就显示所有订阅
-                            if (subscri_device != entry.getKey()) {
+                            if (subscri_device != entry.getKey().toString()) {
                                 //do something
                             } else {
                                 for (int i = 0; i < entry.getValue().size(); i++) {
@@ -1355,8 +1362,6 @@ public class demo {
                                     }
                                 }
                             }
-
-
                         }
                     }
                 }
@@ -1366,7 +1371,7 @@ public class demo {
 //                    model_subscribe.setRowCount(0);
 //                }
             }
-        }, 1000, 1500);
+        }, 1000, 1000);
         /********************* < 订阅定时器END> ************************/
         /*添加进redis*/
         RedisClient redisClient = new RedisClient(RedisUtil.getJedis());

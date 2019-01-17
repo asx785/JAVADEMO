@@ -60,11 +60,7 @@ public class LoginForm {
             e.printStackTrace();
         }
 
-//        BG.setSize(400,300);
-//        ImageIcon imageIcon= new ImageIcon("C:\\Users\\Administrator\\Desktop\\JavaDemoCode(x64)\\src\\resources\\picture\\143882949157763955c2cbb3c2d49.jpg");
-//        BG.setSize(loginJPanel.getSize());
-//        BG.setIcon(imageIcon);
-        //BG.setFont(new Font("宋体", Font.LAYOUT_NO_LIMIT_CONTEXT, 70));
+
         /**/
         Properties prop= ReadProperties.getProp();
 
