@@ -1,8 +1,11 @@
 package lk.redis;
 
+import lk.loginForm.method.ReadProperties;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
+
+import java.util.Properties;
 
 
 /**
@@ -12,12 +15,12 @@ import redis.clients.jedis.JedisPoolConfig;
  */
 public class RedisUtil {
     //服务器IP地址
-    private static String ADDR = "127.0.0.1";
+    private static String IP ;
     //端口
-    private static int PORT = 6379;
+    private static int PORT;
 
     //密码
-    private static String AUTH = "asx785";
+    private static String AUTH;
 
     //连接实例的最大连接数
     private static int MAX_ACTIVE = 1024;
@@ -42,16 +45,17 @@ public class RedisUtil {
      */
 
     static {
-
+        Properties properties= ReadProperties.getProp();
+        IP=properties.getProperty("redis-ip");
+        PORT=Integer.parseInt(properties.getProperty("redis-port"));
+        AUTH=properties.getProperty("redis-auth");
         try {
             JedisPoolConfig config = new JedisPoolConfig();
             config.setMaxIdle(MAX_ACTIVE);
             config.setMaxIdle(MAX_IDLE);
             config.setMaxWaitMillis(MAX_WAIT);
             config.setTestOnBorrow(TEST_ON_BORROW);
-
-            jedisPool = new JedisPool(config,ADDR, PORT, TIMEOUT, AUTH);
-
+            jedisPool = new JedisPool(config,IP, PORT, TIMEOUT, AUTH);
 
         } catch (Exception e) {
 

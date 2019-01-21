@@ -568,8 +568,8 @@ public class demo {
             }
         });
         btnAsyncReadWrite.setBounds(0, 101, 170, 43);
-        btnAsyncReadWrite.setEnabled(false);
-        frame.getContentPane().add(btnAsyncReadWrite);//显示异步按钮
+        btnAsyncReadWrite.setEnabled(false);//异步按钮不可用
+        frame.getContentPane().add(btnAsyncReadWrite);
 
         JPanel panel_3 = new JPanel();
         panel_3.setBorder(new LineBorder(new Color(0, 0, 0)));
@@ -694,9 +694,16 @@ public class demo {
 
 
         //暂停/继续刷新按钮
-        JButton btn_subscribe_pause = new JButton("暂停/继续");
-        btn_subscribe_pause.setBounds(160, 5, 100, 30);
+        JButton btn_subscribe_pause = new JButton();
+        btn_subscribe_pause.setBounds(160, 5, 30, 30);
         panel_subscribe.add(btn_subscribe_pause);
+        //设置图标
+        ImageIcon btn_subscribe_pause_Img = new ImageIcon("C:\\Users\\Administrator\\Desktop\\JavaDemoCode(x64)\\src\\resources\\picture\\zanting.png");
+        ImageIcon btn_subscribe_play_Img = new ImageIcon("C:\\Users\\Administrator\\Desktop\\JavaDemoCode(x64)\\src\\resources\\picture\\bofang.png");
+        btn_subscribe_pause_Img.setImage(btn_subscribe_pause_Img.getImage().getScaledInstance(btn_subscribe_pause.getWidth(),
+                btn_subscribe_pause.getHeight(), Image.SCALE_DEFAULT));
+        btn_subscribe_play_Img.setImage(btn_subscribe_play_Img.getImage().getScaledInstance(btn_subscribe_pause.getWidth(),
+                btn_subscribe_pause.getHeight(), Image.SCALE_DEFAULT));
         btn_subscribe_pause.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent arg0) {
                 if (flagSubscribeAll == 1) {
@@ -885,6 +892,13 @@ public class demo {
                     ImageIcon lampImg = new ImageIcon("C:\\Users\\Administrator\\Desktop\\JavaDemoCode(x64)\\src\\resources\\picture\\lampclose.jpg");
                     lampImg.setImage(lampImg.getImage().getScaledInstance(lamp.getWidth(), lamp.getHeight(), Image.SCALE_DEFAULT));
                     lamp.setIcon(lampImg);
+                }
+
+                //播放暂停图标
+                if(flagSubscribeAll!=1){
+                    btn_subscribe_pause.setIcon(btn_subscribe_play_Img);
+                }else {
+                    btn_subscribe_pause.setIcon(btn_subscribe_pause_Img);
                 }
 
                 if (chooseAsyncReadWrite == 1) {
@@ -1374,7 +1388,7 @@ public class demo {
         }, 1000, 1000);
         /********************* < 订阅定时器END> ************************/
         /*添加进redis*/
-        RedisClient redisClient = new RedisClient(RedisUtil.getJedis());
+        //RedisClient redisClient = new RedisClient(RedisUtil.getJedis());
         Timer redistimer = new Timer();
         redistimer.schedule(new TimerTask() {
             @Override
@@ -1436,14 +1450,12 @@ public class demo {
                                 map.put("Time", ddtf.format(TimeStamp));
                                 map.put("Quality", value.QualityStamp);
                                 map.put("TagID", value.TagID);
-                                redisClient.writeRedis(map, 0);
+                                //redisClient.writeRedis(map, 0);
                             }
                         }
-
                     }
 
                 }
-
             }
         }, 800, 800);
 

@@ -16,6 +16,7 @@ import java.util.Properties;
 public class ReadProperties {
     //读取配置
     private static Properties prop;
+
     static {
         InputStream in = classDemoClient.class.getClassLoader().getResourceAsStream("resources/properties.properties");
         BufferedReader br = new BufferedReader(new InputStreamReader(in));
