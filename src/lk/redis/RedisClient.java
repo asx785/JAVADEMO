@@ -1,9 +1,9 @@
 package lk.redis;
 
-import lk.loginForm.method.ReadProperties;
 import redis.clients.jedis.Jedis;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @Auther: Lk

@@ -4,7 +4,6 @@ import com.ioserver.dll.IOServerAPICilent;
 import lk.Impl.IOServiceImpl;
 import lk.flag.FlagEntity;
 
-import static java.lang.Thread.sleep;
 
 /**
  * @Auther: Lk

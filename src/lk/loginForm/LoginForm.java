@@ -17,9 +17,8 @@ import java.util.Properties;
 public class LoginForm {
     public  JPanel loginJPanel;
     private JTextField usernametextField;
-    private JTextField passwordTextField;
     private JButton Loginbutton;
-
+    private JPasswordField passwordField;
 
 
     public static boolean loginFalg=false;//登录成功验证
@@ -50,7 +49,7 @@ public class LoginForm {
         ImageIcon imageIcon;
         JLabel imageLabel=new JLabel();
         imageLabel.setSize(loginJPanel.getSize());
-        imageIcon = new ImageIcon("C:\\Users\\Administrator\\Desktop\\JavaDemoCode(x64)\\src\\resources\\picture\\bg.jpg"); //写入文件路径
+        imageIcon = new ImageIcon("src/resource/picture/bg.jpg"); //写入文件路径
         imageIcon.setImage(imageIcon.getImage().getScaledInstance(imageLabel.getWidth(), imageLabel.getHeight(), Image.SCALE_DEFAULT));
         imageLabel.setIcon(imageIcon);
 
@@ -67,7 +66,7 @@ public class LoginForm {
         Loginbutton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent arg0) {
                 String username=usernametextField.getText();
-                String password=passwordTextField.getText();
+                String password=passwordField.getText();
                 BCryptFunction bCryptFunction=new BCryptFunction();
                 if("".equals(username)){
                     messageForm.messageShow("Username can not be empty ");
@@ -85,9 +84,8 @@ public class LoginForm {
                     windowsform.setVisible(true);//显示main界面
                 }else{
                     // lktodo:测试免登陆
-                    //messageForm.messageShow("UserName or Password may be wrong !");
-                    loginframe.dispose();//回收登录界面
-                    windowsform.setVisible(true);//显示main界面
+                    messageForm.messageShow("UserName or Password may be wrong !");
+
                 }
             }
         });

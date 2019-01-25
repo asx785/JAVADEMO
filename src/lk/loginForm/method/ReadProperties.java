@@ -18,7 +18,7 @@ public class ReadProperties {
     private static Properties prop;
 
     static {
-        InputStream in = classDemoClient.class.getClassLoader().getResourceAsStream("resources/properties.properties");
+        InputStream in = classDemoClient.class.getClassLoader().getResourceAsStream("resource/properties.properties");
         BufferedReader br = new BufferedReader(new InputStreamReader(in));
         prop= new Properties();
         try {
